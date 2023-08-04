@@ -3,7 +3,8 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, RollingBall,
+        BelongsToGround, Cleanup, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor,
+        RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS},
     resources::GroundsResource,
@@ -111,6 +112,30 @@ pub fn color_grounds(
                 let Some(mat)=materials.get_mut(mat_hdl) else { continue; };
                 mat.base_color = Color::BLUE;
             }
+        }
+    }
+}
+
+pub fn mark_cleanup_prev_grounds(mut commands: Commands, mut ground_res: ResMut<GroundsResource>) {
+    if !ground_res.is_changed() {
+        return;
+    }
+    let GroundsResource {
+            previous_ground: Some(previous_ground),
+            ..
+    } = *ground_res else { return; };
+    let Some(mut ent_commands) = commands.get_entity(previous_ground) else { return; };
+    ent_commands.insert(Cleanup {
+        timer: Timer::from_seconds(5.0, TimerMode::Once),
+    });
+    ground_res.previous_ground = None;
+}
+
+pub fn cleanup_marked(mut commands: Commands, mut query: Query<(Entity, &mut Cleanup)>, time: Res<Time>) {
+    for (entity, mut cleanup) in query.iter_mut() {
+        if cleanup.timer.tick(time.delta()).finished() {
+            let Some(ent_commands) = commands.get_entity(entity) else { continue; };
+            ent_commands.despawn_recursive();
         }
     }
 }

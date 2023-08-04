@@ -19,6 +19,12 @@ pub struct GroundSurfaceSensor;
 pub struct GroundMidSensor;
 
 #[derive(Debug, Component)]
+pub struct Cleanup {
+    /// Cleanup after timer completes.
+    pub timer: Timer,
+}
+
+#[derive(Debug, Component)]
 pub struct Wall;
 
 #[derive(Debug, Component)]
