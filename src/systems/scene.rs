@@ -41,6 +41,7 @@ pub fn scene_setup(
         ball_collider,
         RigidBody::Dynamic,
         RollingBall,
+        Velocity::default(),
     ));
 
     // light...
