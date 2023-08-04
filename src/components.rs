@@ -7,6 +7,9 @@ pub struct RollingBall;
 pub struct Ground;
 
 #[derive(Debug, Component)]
+pub struct GroundSensor;
+
+#[derive(Debug, Component)]
 pub struct Wall;
 
 #[derive(Debug, Component)]

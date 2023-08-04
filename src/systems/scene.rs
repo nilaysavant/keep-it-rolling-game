@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::{na::Translation, prelude::*};
 
-use crate::components::{Ground, MyCamera, MyLight, RollingBall};
+use crate::components::{Ground, GroundSensor, MyCamera, MyLight, RollingBall};
 
 /// set up a simple 3D scene
 pub fn scene_setup(
@@ -31,9 +31,20 @@ pub fn scene_setup(
                     material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
                     ..default()
                 },
-                ground_collider,
+                ground_collider.clone(),
                 RigidBody::Fixed,
                 Ground,
+            ));
+            commands.spawn((
+                PbrBundle {
+                    mesh: meshes.add(ground_mesh.clone()),
+                    material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
+                    transform: Transform::from_translation(Vec3::Y * 0.1),
+                    ..default()
+                },
+                ground_collider.clone(),
+                Sensor,
+                GroundSensor,
             ));
         });
 

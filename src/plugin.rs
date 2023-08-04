@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::systems::{basic::setup, scene::scene_setup, window::setup_window};
+use crate::systems::{physics::ball_touching_ground, scene::scene_setup, window::setup_window};
 
 pub struct KeepItRollingGamePlugin;
 
@@ -23,6 +23,8 @@ impl Plugin for KeepItRollingGamePlugin {
             ))
             // logic...
             .add_systems(Startup, scene_setup)
+            // physics...
+            .add_systems(Update, (ball_touching_ground,))
             // other...
             .add_systems(Startup, || info!("Game Started..."));
     }
