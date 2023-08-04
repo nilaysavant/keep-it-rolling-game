@@ -1,6 +1,7 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 
 use bevy::prelude::*;
+use bevy_rapier3d::prelude::*;
 
 use crate::systems::{basic::setup, scene::scene_setup, window::setup_window};
 
@@ -11,6 +12,15 @@ impl Plugin for KeepItRollingGamePlugin {
         app //
             // window...
             .add_systems(Startup, setup_window)
+            // physics setup...
+            .insert_resource(RapierConfiguration {
+                gravity: Vec3::new(0., -10., 0.),
+                ..default()
+            })
+            .add_plugins((
+                RapierPhysicsPlugin::<NoUserData>::default(),
+                RapierDebugRenderPlugin::default(),
+            ))
             // logic...
             .add_systems(Startup, scene_setup)
             // other...
