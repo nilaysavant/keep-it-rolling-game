@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::{na::Translation, prelude::*};
 
-use crate::components::{Ground, GroundSensor, MyCamera, MyLight, RollingBall};
+use crate::components::{BelongsToGround, Ground, GroundSensor, MyCamera, MyLight, RollingBall};
 
 /// set up a simple 3D scene
 pub fn scene_setup(
@@ -12,7 +12,7 @@ pub fn scene_setup(
     // ground...
     let ground_mesh: Mesh = shape::Plane::from_size(5.0).into();
     let Some(ground_collider) = Collider::from_bevy_mesh(&ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
-    commands
+    let ground_ent = commands
         .spawn_empty()
         .insert((
             TransformBundle::from_transform(Transform::from_rotation(Quat::from_axis_angle(
@@ -24,29 +24,32 @@ pub fn scene_setup(
                 ..default()
             },
         ))
-        .with_children(|commands| {
-            commands.spawn((
-                PbrBundle {
-                    mesh: meshes.add(ground_mesh.clone()),
-                    material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-                    ..default()
-                },
-                ground_collider.clone(),
-                RigidBody::Fixed,
-                Ground,
-            ));
-            commands.spawn((
-                PbrBundle {
-                    mesh: meshes.add(ground_mesh.clone()),
-                    material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
-                    transform: Transform::from_translation(Vec3::Y * 0.1),
-                    ..default()
-                },
-                ground_collider.clone(),
-                Sensor,
-                GroundSensor,
-            ));
-        });
+        .id();
+    commands.entity(ground_ent).with_children(|commands| {
+        commands.spawn((
+            PbrBundle {
+                mesh: meshes.add(ground_mesh.clone()),
+                material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+                ..default()
+            },
+            ground_collider.clone(),
+            RigidBody::Fixed,
+            Ground,
+            BelongsToGround(ground_ent),
+        ));
+        commands.spawn((
+            PbrBundle {
+                mesh: meshes.add(ground_mesh.clone()),
+                material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
+                transform: Transform::from_translation(Vec3::Y * 0.1),
+                ..default()
+            },
+            ground_collider.clone(),
+            Sensor,
+            GroundSensor,
+            BelongsToGround(ground_ent),
+        ));
+    });
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {

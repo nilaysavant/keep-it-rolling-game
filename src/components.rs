@@ -7,6 +7,9 @@ pub struct RollingBall;
 pub struct Ground;
 
 #[derive(Debug, Component)]
+pub struct BelongsToGround(pub Entity);
+
+#[derive(Debug, Component)]
 pub struct GroundSensor;
 
 #[derive(Debug, Component)]
@@ -20,4 +23,3 @@ pub struct MyLight;
 
 #[derive(Debug, Component)]
 pub struct MyCamera;
-
