@@ -12,20 +12,30 @@ pub fn scene_setup(
     // ground...
     let ground_mesh: Mesh = shape::Plane::from_size(5.0).into();
     let Some(ground_collider) = Collider::from_bevy_mesh(&ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
-    commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(ground_mesh.clone()),
-            material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-            transform: Transform::from_rotation(Quat::from_axis_angle(
+    commands
+        .spawn_empty()
+        .insert((
+            TransformBundle::from_transform(Transform::from_rotation(Quat::from_axis_angle(
                 Vec3::X,
                 std::f32::consts::FRAC_PI_4,
-            )),
-            ..default()
-        },
-        ground_collider,
-        RigidBody::Fixed,
-        Ground,
-    ));
+            ))),
+            VisibilityBundle {
+                visibility: Visibility::Visible,
+                ..default()
+            },
+        ))
+        .with_children(|commands| {
+            commands.spawn((
+                PbrBundle {
+                    mesh: meshes.add(ground_mesh.clone()),
+                    material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+                    ..default()
+                },
+                ground_collider,
+                RigidBody::Fixed,
+                Ground,
+            ));
+        });
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {
