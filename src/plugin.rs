@@ -2,7 +2,7 @@
 
 use bevy::prelude::*;
 
-use crate::systems::{basic::setup, window::setup_window};
+use crate::systems::{basic::setup, scene::scene_setup, window::setup_window};
 
 pub struct KeepItRollingGamePlugin;
 
@@ -12,7 +12,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // window...
             .add_systems(Startup, setup_window)
             // logic...
-            .add_systems(Startup, setup)
+            .add_systems(Startup, scene_setup)
             // other...
             .add_systems(Startup, || info!("Game Started..."));
     }
