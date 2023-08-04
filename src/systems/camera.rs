@@ -6,7 +6,7 @@ use crate::{
     resources::GroundsResource,
 };
 
-pub fn handle_camera_focus(
+pub fn move_camera_focus_with_grounds(
     mut query_cams: Query<(&mut Transform, &MyCamera)>,
     query_grounds: Query<&Transform, (With<Ground>, Without<MyCamera>)>,
     query_ball: Query<&Velocity, With<RollingBall>>,

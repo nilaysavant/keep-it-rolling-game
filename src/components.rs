@@ -18,12 +18,13 @@ pub struct GroundSurfaceSensor;
 #[derive(Debug, Component)]
 pub struct GroundMidSensor;
 
-
 #[derive(Debug, Component)]
 pub struct Wall;
 
 #[derive(Debug, Component)]
-pub struct MyLight;
+pub struct MyLight {
+    pub init_transform: Transform,
+}
 
 #[derive(Debug, Component)]
 pub struct MyCamera {

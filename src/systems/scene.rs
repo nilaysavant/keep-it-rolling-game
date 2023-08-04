@@ -45,6 +45,7 @@ pub fn scene_setup(
     ));
 
     // light...
+    let light_transform = Transform::from_xyz(4.0, 8.0, 4.0);
     commands.spawn((
         PointLightBundle {
             point_light: PointLight {
@@ -52,10 +53,12 @@ pub fn scene_setup(
                 shadows_enabled: true,
                 ..default()
             },
-            transform: Transform::from_xyz(4.0, 8.0, 4.0),
+            transform: light_transform,
             ..default()
         },
-        MyLight,
+        MyLight {
+            init_transform: light_transform,
+        },
     ));
 
     let zoom_out_fact = 2.;

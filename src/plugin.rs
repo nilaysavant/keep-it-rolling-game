@@ -7,7 +7,8 @@ use bevy_rapier3d::prelude::*;
 use crate::{
     resources::GroundsResource,
     systems::{
-        camera::handle_camera_focus,
+        camera::move_camera_focus_with_grounds,
+        lights::move_lighting_with_grounds,
         physics::{color_grounds, handle_ground_sensor, handle_mid_ground_sensor},
         scene::scene_setup,
         window::setup_window,
@@ -43,7 +44,9 @@ impl Plugin for KeepItRollingGamePlugin {
                 ),
             )
             // camera
-            .add_systems(Update, handle_camera_focus)
+            .add_systems(Update, move_camera_focus_with_grounds)
+            // lights
+            .add_systems(Update, move_lighting_with_grounds)
             // debug...
             .add_plugins(WorldInspectorPlugin::default())
             .register_type::<GroundsResource>()
