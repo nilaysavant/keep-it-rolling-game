@@ -10,6 +10,9 @@ pub struct Ground;
 pub struct GroundSensor;
 
 #[derive(Debug, Component)]
+pub struct ActiveGround;
+
+#[derive(Debug, Component)]
 pub struct Wall;
 
 #[derive(Debug, Component)]
