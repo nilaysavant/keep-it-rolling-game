@@ -93,7 +93,7 @@ pub fn spawn_ground(
         .id();
     commands
         .entity(ground_ent)
-        .insert((Ground, BelongsToGround(ground_ent)))
+        .insert((Ground, BelongsToGround(ground_ent), Ccd::default()))
         .with_children(|commands| {
             let ground_mesh: Mesh =
                 shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS, GROUND_LENGTH).into();
@@ -133,7 +133,7 @@ pub fn spawn_ground(
                     mesh: meshes.add(ground_mid_sensor_mesh.clone()),
                     material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
                     transform: Transform::from_translation(
-                        Vec3::Y * GROUND_THICKNESS * 1.0 - Vec3::Z * GROUND_LENGTH * 0.2,
+                        Vec3::Y * GROUND_THICKNESS * 2.0 - Vec3::Z * GROUND_LENGTH * 0.2,
                     ),
                     visibility: Visibility::Hidden,
                     ..default()
