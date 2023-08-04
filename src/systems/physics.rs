@@ -28,13 +28,13 @@ pub fn handle_ground_sensor(
             active_ground = Some(*ground_ent);
         }
     }
-    // Check if the active ground was set and commit it to state,
-    // also push the prev active to prev ground as well...
     if active_ground.is_some() && ground_res.current_ground != active_ground {
+        // if active ground was set and current ground is not the same as the new active ground
+        // then rotate the active ground in state res...
         ground_res.previous_ground = ground_res.current_ground;
+        ground_res.current_ground = active_ground;
         ground_res.next_ground = None;
     }
-    ground_res.current_ground = active_ground;
 }
 
 #[allow(clippy::type_complexity, clippy::too_many_arguments)]
