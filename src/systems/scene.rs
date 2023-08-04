@@ -16,7 +16,6 @@ pub fn scene_setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.insert_resource(GroundsResource::default());
     // ground...
     let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
     // rotate by 45 deg...
@@ -58,15 +57,21 @@ pub fn scene_setup(
         MyLight,
     ));
 
-    let zoom_out = 5.;
+    let zoom_out_fact = 5.;
+    let cam_transform = Transform::from_xyz(
+        -2.0 * zoom_out_fact,
+        2.5 * zoom_out_fact,
+        5.0 * zoom_out_fact,
+    );
     // camera...
     commands.spawn((
         Camera3dBundle {
-            transform: Transform::from_xyz(-2.0 * zoom_out, 2.5 * zoom_out, 5.0 * zoom_out)
-                .looking_at(Vec3::ZERO, Vec3::Y),
+            transform: cam_transform.looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },
-        MyCamera,
+        MyCamera {
+            init_transform: cam_transform,
+        },
     ));
 }
 

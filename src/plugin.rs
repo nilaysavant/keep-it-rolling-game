@@ -7,6 +7,7 @@ use bevy_rapier3d::prelude::*;
 use crate::{
     resources::GroundsResource,
     systems::{
+        camera::handle_camera_focus,
         physics::{color_grounds, handle_ground_sensor, handle_mid_ground_sensor},
         scene::scene_setup,
         window::setup_window,
@@ -22,7 +23,7 @@ impl Plugin for KeepItRollingGamePlugin {
             .add_systems(Startup, setup_window)
             // physics setup...
             .insert_resource(RapierConfiguration {
-                gravity: Vec3::new(0., -2., 0.),
+                gravity: Vec3::new(0., -10., 0.),
                 ..default()
             })
             .add_plugins((
@@ -32,7 +33,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // logic...
             .add_systems(Startup, scene_setup)
             // physics...
-            // .insert_resource(GroundsResource::default())
+            .insert_resource(GroundsResource::default())
             .add_systems(
                 Update,
                 (
@@ -41,6 +42,8 @@ impl Plugin for KeepItRollingGamePlugin {
                     color_grounds,
                 ),
             )
+            // camera
+            .add_systems(Update, handle_camera_focus)
             // debug...
             .add_plugins(WorldInspectorPlugin::default())
             .register_type::<GroundsResource>()

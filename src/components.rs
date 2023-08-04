@@ -26,4 +26,6 @@ pub struct Wall;
 pub struct MyLight;
 
 #[derive(Debug, Component)]
-pub struct MyCamera;
+pub struct MyCamera {
+    pub init_transform: Transform,
+}
