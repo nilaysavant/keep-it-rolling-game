@@ -5,7 +5,7 @@ use crate::{
     components::{
         BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, RollingBall,
     },
-    constants::{GROUND_ANGLE, GROUND_LENGTH},
+    constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS},
     resources::GroundsResource,
 };
 
@@ -64,7 +64,8 @@ pub fn handle_mid_ground_sensor(
             let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { continue; };
             // rotate by 45 deg...
             transform.rotation = Quat::from_axis_angle(Vec3::X, GROUND_ANGLE);
-            transform.translation.y += -1.0;
+            transform.translation.y +=
+                -(GROUND_LENGTH / GROUND_ANGLE.cos()) * 0.385 * GROUND_THICKNESS;
             transform.translation.z += GROUND_LENGTH - 0.1;
             commands
                 .entity(ground_ent)

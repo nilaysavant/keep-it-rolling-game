@@ -6,7 +6,7 @@ use crate::{
         BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, MyCamera,
         MyLight, RollingBall,
     },
-    constants::{GROUND_ANGLE, GROUND_LENGTH},
+    constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     resources::GroundsResource,
 };
 
@@ -27,7 +27,7 @@ pub fn scene_setup(
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {
-        radius: 0.2,
+        radius: 0.5,
         ..default()
     });
     let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
@@ -61,7 +61,7 @@ pub fn scene_setup(
         },
     ));
 
-    let zoom_out_fact = 1.2;
+    let zoom_out_fact = 2.2;
     let cam_transform = Transform::from_xyz(
         -2.0 * zoom_out_fact,
         4.5 * zoom_out_fact,
@@ -95,7 +95,8 @@ pub fn spawn_ground(
         .entity(ground_ent)
         .insert((Ground, BelongsToGround(ground_ent)))
         .with_children(|commands| {
-            let ground_mesh: Mesh = shape::Box::new(5.0, 0.2, GROUND_LENGTH).into();
+            let ground_mesh: Mesh =
+                shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS, GROUND_LENGTH).into();
             let Some(ground_collider) = Collider::from_bevy_mesh(
                 &ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
             commands.spawn((
@@ -124,14 +125,16 @@ pub fn spawn_ground(
                 BelongsToGround(ground_ent),
             ));
             let ground_mid_sensor_mesh: Mesh =
-                shape::Box::new(5.0, 1.0, GROUND_LENGTH * 0.1).into();
+                shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS * 4.0, GROUND_LENGTH * 0.1).into();
             let Some(ground_mid_collider) = Collider::from_bevy_mesh(
                 &ground_mid_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(ground_mid_sensor_mesh.clone()),
                     material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
-                    transform: Transform::from_translation(Vec3::Y * 0.2 - Vec3::Z * GROUND_LENGTH * 0.2),
+                    transform: Transform::from_translation(
+                        Vec3::Y * GROUND_THICKNESS * 1.0 - Vec3::Z * GROUND_LENGTH * 0.2,
+                    ),
                     visibility: Visibility::Hidden,
                     ..default()
                 },
