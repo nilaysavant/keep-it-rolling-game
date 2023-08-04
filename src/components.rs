@@ -7,6 +7,9 @@ pub struct RollingBall;
 pub struct Ground;
 
 #[derive(Debug, Component)]
+pub struct GroundMesh;
+
+#[derive(Debug, Component)]
 pub struct BelongsToGround(pub Entity);
 
 #[derive(Debug, Component)]
@@ -14,6 +17,9 @@ pub struct GroundSensor;
 
 #[derive(Debug, Component)]
 pub struct ActiveGround;
+
+#[derive(Debug, Component)]
+pub struct PrevActiveGround;
 
 #[derive(Debug, Component)]
 pub struct Wall;
