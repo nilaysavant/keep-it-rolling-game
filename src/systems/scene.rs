@@ -45,11 +45,11 @@ pub fn scene_setup(
     ));
 
     // light...
-    let light_transform = Transform::from_xyz(4.0, 8.0, 4.0);
+    let light_transform = Transform::from_xyz(1.0, 8.0, 0.0);
     commands.spawn((
         PointLightBundle {
             point_light: PointLight {
-                intensity: 1500.0,
+                intensity: 2500.0,
                 shadows_enabled: true,
                 ..default()
             },

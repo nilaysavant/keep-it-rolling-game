@@ -116,7 +116,7 @@ pub fn color_grounds(
     }
 }
 
-pub fn mark_cleanup_prev_grounds(mut commands: Commands, mut ground_res: ResMut<GroundsResource>) {
+pub fn mark_cleanup_prev_grounds(mut commands: Commands, ground_res: Res<GroundsResource>) {
     if !ground_res.is_changed() {
         return;
     }
@@ -128,10 +128,13 @@ pub fn mark_cleanup_prev_grounds(mut commands: Commands, mut ground_res: ResMut<
     ent_commands.insert(Cleanup {
         timer: Timer::from_seconds(5.0, TimerMode::Once),
     });
-    ground_res.previous_ground = None;
 }
 
-pub fn cleanup_marked(mut commands: Commands, mut query: Query<(Entity, &mut Cleanup)>, time: Res<Time>) {
+pub fn cleanup_marked(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Cleanup)>,
+    time: Res<Time>,
+) {
     for (entity, mut cleanup) in query.iter_mut() {
         if cleanup.timer.tick(time.delta()).finished() {
             let Some(ent_commands) = commands.get_entity(entity) else { continue; };
