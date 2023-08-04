@@ -27,7 +27,7 @@ pub fn scene_setup(
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {
-        radius: 0.5,
+        radius: 0.2,
         ..default()
     });
     let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
@@ -35,7 +35,7 @@ pub fn scene_setup(
         PbrBundle {
             mesh: meshes.add(ball_mesh),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 8.5, 0.0),
+            transform: Transform::from_xyz(0.0, 2.5, 0.0),
             ..default()
         },
         ball_collider,
