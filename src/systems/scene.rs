@@ -21,6 +21,7 @@ pub fn scene_setup(
             ..default()
         },
         ground_collider,
+        RigidBody::Fixed,
     ));
 
     // ball...
@@ -28,7 +29,7 @@ pub fn scene_setup(
         radius: 0.5,
         ..default()
     });
-    let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::TriMesh) else { return; };
+    let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
     commands.spawn((
         PbrBundle {
             mesh: meshes.add(ball_mesh),
@@ -37,6 +38,7 @@ pub fn scene_setup(
             ..default()
         },
         ball_collider,
+        RigidBody::Dynamic,
     ));
 
     // light...
