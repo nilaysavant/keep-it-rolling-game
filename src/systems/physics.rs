@@ -64,7 +64,7 @@ pub fn handle_mid_ground_sensor(
             let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { continue; };
             // rotate by 45 deg...
             transform.rotation = Quat::from_axis_angle(Vec3::X, GROUND_ANGLE);
-            transform.translation.y += -2.0;
+            transform.translation.y += -1.2;
             transform.translation.z += 4.5;
             commands
                 .entity(ground_ent)

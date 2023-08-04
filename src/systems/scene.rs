@@ -58,7 +58,7 @@ pub fn scene_setup(
         MyLight,
     ));
 
-    let zoom_out_fact = 5.;
+    let zoom_out_fact = 2.;
     let cam_transform = Transform::from_xyz(
         -2.0 * zoom_out_fact,
         2.5 * zoom_out_fact,
