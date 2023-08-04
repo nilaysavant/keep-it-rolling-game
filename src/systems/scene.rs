@@ -1,8 +1,13 @@
 use bevy::prelude::*;
 use bevy_rapier3d::{na::Translation, prelude::*};
 
-use crate::components::{
-    BelongsToGround, Ground, GroundMesh, GroundSensor, MyCamera, MyLight, RollingBall,
+use crate::{
+    components::{
+        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, MyCamera,
+        MyLight, RollingBall,
+    },
+    constants::GROUND_ANGLE,
+    resources::GroundsResource,
 };
 
 /// set up a simple 3D scene
@@ -11,13 +16,14 @@ pub fn scene_setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    commands.insert_resource(GroundsResource::default());
     // ground...
     let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
     // rotate by 45 deg...
     commands
         .entity(ground_ent)
         .insert(TransformBundle::from_transform(Transform::from_rotation(
-            Quat::from_axis_angle(Vec3::X, std::f32::consts::FRAC_PI_6),
+            Quat::from_axis_angle(Vec3::X, GROUND_ANGLE),
         )));
 
     // ball...
@@ -30,7 +36,7 @@ pub fn scene_setup(
         PbrBundle {
             mesh: meshes.add(ball_mesh),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 1.5, 0.0),
+            transform: Transform::from_xyz(0.0, 8.5, 0.0),
             ..default()
         },
         ball_collider,
@@ -69,22 +75,19 @@ pub fn spawn_ground(
     meshes: &mut ResMut<'_, Assets<Mesh>>,
     materials: &mut ResMut<'_, Assets<StandardMaterial>>,
 ) -> Option<Entity> {
-    let ground_mesh: Mesh = shape::Plane::from_size(5.0).into();
-    let Some(ground_collider) = Collider::from_bevy_mesh(&ground_mesh, &ComputedColliderShape::TriMesh) else { return None; };
     let ground_ent = commands
         .spawn_empty()
-        .insert((
-            VisibilityBundle {
-                visibility: Visibility::Visible,
-                ..default()
-            },
-            // ,
-        ))
+        .insert(VisibilityBundle {
+            visibility: Visibility::Visible,
+            ..default()
+        })
         .id();
     commands
         .entity(ground_ent)
-        .insert(BelongsToGround(ground_ent))
+        .insert((Ground, BelongsToGround(ground_ent)))
         .with_children(|commands| {
+            let ground_mesh: Mesh = shape::Box::new(5.0, 0.2, 5.0).into();
+            let Some(ground_collider) = Collider::from_bevy_mesh(&ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(ground_mesh.clone()),
@@ -101,13 +104,28 @@ pub fn spawn_ground(
                 PbrBundle {
                     mesh: meshes.add(ground_mesh.clone()),
                     material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
-                    transform: Transform::from_translation(Vec3::Y * 0.1),
+                    transform: Transform::from_translation(Vec3::Y * 0.2),
                     visibility: Visibility::Hidden,
                     ..default()
                 },
                 ground_collider.clone(),
                 Sensor,
-                GroundSensor,
+                GroundSurfaceSensor,
+                BelongsToGround(ground_ent),
+            ));
+            let ground_mid_sensor_mesh: Mesh = shape::Box::new(5.0, 1.0, 1.0).into();
+            let Some(ground_mid_collider) = Collider::from_bevy_mesh(&ground_mid_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
+            commands.spawn((
+                PbrBundle {
+                    mesh: meshes.add(ground_mid_sensor_mesh.clone()),
+                    material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
+                    transform: Transform::from_translation(Vec3::Y * 0.5 + Vec3::Z * 0.5),
+                    visibility: Visibility::Hidden,
+                    ..default()
+                },
+                ground_mid_collider.clone(),
+                Sensor,
+                GroundMidSensor,
                 BelongsToGround(ground_ent),
             ));
         });

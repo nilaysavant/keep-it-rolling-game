@@ -13,13 +13,11 @@ pub struct GroundMesh;
 pub struct BelongsToGround(pub Entity);
 
 #[derive(Debug, Component)]
-pub struct GroundSensor;
+pub struct GroundSurfaceSensor;
 
 #[derive(Debug, Component)]
-pub struct ActiveGround;
+pub struct GroundMidSensor;
 
-#[derive(Debug, Component)]
-pub struct PrevActiveGround;
 
 #[derive(Debug, Component)]
 pub struct Wall;
