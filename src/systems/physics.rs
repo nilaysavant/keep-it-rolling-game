@@ -25,11 +25,13 @@ pub fn ball_touching_ground(
             commands.entity(*ground_ent).insert(ActiveGround);
         } else {
             if active_grounds.contains(*ground_ent) {
+                // clear any prev active
                 for prev_active_ground in prev_active_grounds.iter() {
                     commands
                         .entity(prev_active_ground)
                         .remove::<PrevActiveGround>();
                 }
+                // insert new prev active
                 commands.entity(*ground_ent).insert(PrevActiveGround);
             }
             commands.entity(*ground_ent).remove::<ActiveGround>();
