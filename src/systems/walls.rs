@@ -128,7 +128,7 @@ pub fn handle_wall_events(
                     *visibility = Visibility::Visible;
                     let Some(wall_mat) = materials.get_mut(mat_hdl) else { continue; };
                     wall_mat.alpha_mode = AlphaMode::Blend;
-                    wall_mat.base_color.set_a(0.5);
+                    wall_mat.base_color.set_a(0.6);
                     if parent.get() != *ground {
                         commands.entity(entity).remove_parent();
                         commands.entity(*ground).push_children(&[entity]);
