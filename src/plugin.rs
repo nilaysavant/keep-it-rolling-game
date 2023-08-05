@@ -13,6 +13,7 @@ use crate::{
     systems::{
         camera::move_camera_focus_with_grounds,
         cleanup::cleanup,
+        credits::display_credits,
         egui::init_egui_context,
         game_over_sensor::{
             handle_ground_game_over_sensor, move_game_over_sensors_with_current_ground,
@@ -120,6 +121,8 @@ impl Plugin for KeepItRollingGamePlugin {
                 Update,
                 (move_lighting_with_grounds,).in_set(PluginSystemSet::InGame),
             )
+            // credits...
+            .add_systems(Update, (display_credits,))
             // cleanup
             .add_systems(First, cleanup)
             // debug...

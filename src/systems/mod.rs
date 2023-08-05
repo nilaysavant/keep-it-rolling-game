@@ -1,6 +1,7 @@
 pub mod basic;
 pub mod camera;
 pub mod cleanup;
+pub mod credits;
 pub mod egui;
 pub mod game_over_sensor;
 pub mod ground;
