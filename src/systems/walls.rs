@@ -7,7 +7,8 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, TempWall, Wall,
+        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, MyCamera,
+        TempWall, Wall,
     },
     constants::{GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::WallEvent,
@@ -22,7 +23,7 @@ pub fn pick_ground_point_raycast(
     temp_walls: Query<With<TempWall>>,
     ground_res: Res<GroundsResource>,
     rapier_context: Res<RapierContext>,
-    cameras: Query<(&Camera, &GlobalTransform)>,
+    cameras: Query<(&Camera, &GlobalTransform), With<MyCamera>>,
     mut gizmos: Gizmos,
     mouse_btn_input: Res<Input<MouseButton>>,
     key_input: Res<Input<KeyCode>>,
@@ -38,50 +39,47 @@ pub fn pick_ground_point_raycast(
         .exclude_sensors()
         .predicate(&predicate);
 
-    // We will color in read the colliders hovered by the mouse.
-    for (camera, camera_transform) in &cameras {
-        // First, compute a ray from the mouse position.
-        let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else { return; };
+    let Ok((camera, camera_transform)) = cameras.get_single() else { return; };
 
-        // Then cast the ray.
-        let hit = rapier_context.cast_ray_and_get_normal(
-            ray.origin,
-            ray.direction,
-            f32::MAX,
-            true,
-            filter,
-        );
+    // First, compute a ray from the mouse position.
+    let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else { return; };
 
-        if let Some((entity, intersection)) = hit {
-            let Ok(BelongsToGround(ground_ent)) =  query_ground_meshes.get(entity) else { continue; };
-            if ground_res.current_ground == Some(*ground_ent)
-                || ground_res.next_ground == Some(*ground_ent)
-            {
-                let Ok(ground_transform) = query_grounds.get(*ground_ent) else { continue; };
-                let RayIntersection { point, normal, .. } = intersection;
-                let point_local = ground_transform.affine().inverse().transform_point(point);
-                let normal_local = ground_transform.affine().inverse().transform_point(normal);
-                gizmos.ray(point, normal, Color::CYAN);
-                gizmos.circle(point, normal, 0.1, Color::CYAN);
+    // Then cast the ray.
+    let hit =
+        rapier_context.cast_ray_and_get_normal(ray.origin, ray.direction, f32::MAX, true, filter);
 
-                let rotation_sensitivity = 0.05;
-                if key_input.pressed(KeyCode::A) {
-                    *wall_angle += rotation_sensitivity;
-                } else if key_input.pressed(KeyCode::D) {
-                    *wall_angle -= rotation_sensitivity;
-                }
-                let mut transform =
-                    Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);
-                transform.rotation = Quat::from_axis_angle(Vec3::Y, *wall_angle);
-                if mouse_btn_input.just_pressed(MouseButton::Left) {
-                    wall_event.send(WallEvent::Draw);
-                } else {
-                    wall_event.send(WallEvent::HoverUpdate {
-                        ground: *ground_ent,
-                        transform,
-                    });
-                }
-            }
+    let Some((entity, intersection)) = hit else {
+        // if not hit send hover stop
+        wall_event.send(WallEvent::HoverStop);
+        return;
+    };
+    // if hit continue to evaluate...
+    let Ok(BelongsToGround(ground_ent)) =  query_ground_meshes.get(entity) else { return; };
+    if ground_res.current_ground == Some(*ground_ent) || ground_res.next_ground == Some(*ground_ent)
+    {
+        let Ok(ground_transform) = query_grounds.get(*ground_ent) else { return; };
+        let RayIntersection { point, normal, .. } = intersection;
+        let point_local = ground_transform.affine().inverse().transform_point(point);
+        let normal_local = ground_transform.affine().inverse().transform_point(normal);
+        gizmos.ray(point, normal, Color::CYAN);
+        gizmos.circle(point, normal, 0.1, Color::CYAN);
+
+        let rotation_sensitivity = 0.05;
+        if key_input.pressed(KeyCode::A) {
+            *wall_angle += rotation_sensitivity;
+        } else if key_input.pressed(KeyCode::D) {
+            *wall_angle -= rotation_sensitivity;
+        }
+        let mut transform =
+            Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);
+        transform.rotation = Quat::from_axis_angle(Vec3::Y, *wall_angle);
+        if mouse_btn_input.just_pressed(MouseButton::Left) {
+            wall_event.send(WallEvent::Draw);
+        } else {
+            wall_event.send(WallEvent::HoverUpdate {
+                ground: *ground_ent,
+                transform,
+            });
         }
     }
 }
