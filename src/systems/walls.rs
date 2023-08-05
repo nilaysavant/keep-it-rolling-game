@@ -63,16 +63,20 @@ pub fn pick_ground_point_raycast(
                 gizmos.circle(point, normal, 0.1, Color::CYAN);
 
                 for ev in scroll_evr.iter() {
-                    if let MouseScrollUnit::Pixel = ev.unit {
-                        *wall_angle = ev.y;
+                    match ev.unit {
+                        MouseScrollUnit::Line => {
+                            *wall_angle = ev.y * 0.5;
+                        }
+                        MouseScrollUnit::Pixel => {
+                            *wall_angle = ev.y * 0.1;
+                        }
                     }
                 }
                 let mut transform =
                     Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);
-                // transform.rotation = Quat::from_axis_angle(Vec3::Y, *wall_angle);
+                transform.rotation = Quat::from_axis_angle(Vec3::Y, *wall_angle);
                 if mouse_btn_input.just_pressed(MouseButton::Left) {
                     wall_event.send(WallEvent::Draw);
-                    println!("Test");
                 } else {
                     wall_event.send(WallEvent::HoverUpdate {
                         ground: *ground_ent,
