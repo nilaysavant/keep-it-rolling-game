@@ -67,7 +67,7 @@ pub fn scene_setup(
     let cam_transform = Transform::from_xyz(
         -2.0 * zoom_out_fact,
         4.5 * zoom_out_fact,
-        5.0 * zoom_out_fact,
+        6.0 * zoom_out_fact,
     );
     // camera...
     commands.spawn((

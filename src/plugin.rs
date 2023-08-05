@@ -38,7 +38,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // physics plugins...
             .add_plugins((
                 RapierPhysicsPlugin::<NoUserData>::default(),
-                RapierDebugRenderPlugin::default(),
+                // RapierDebugRenderPlugin::default(),
             ))
             // fly cam
             // .add_plugins(FlyCameraPlugin)
