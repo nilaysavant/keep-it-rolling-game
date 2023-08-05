@@ -33,13 +33,30 @@ pub fn update_grounds_passed(
     }
 }
 
-pub fn display_score(scoring_res: Res<ScoresResource>, mut egui_contexts: EguiContexts) {
+pub fn display_scoreboard(
+    scoring_res: Res<ScoresResource>,
+    prev_scoring_res: Res<PreviousScoresRes>,
+    mut egui_contexts: EguiContexts,
+) {
     let ScoresResource { stopwatch: Some(stopwatch), grounds_passed } = scoring_res.as_ref() else { return; };
     let watch_display = format!(
         "{:02.0}:{:02.0}",
         stopwatch.elapsed_secs() / 60.,
         stopwatch.elapsed_secs() % 60.
     );
+    let score_display = format!("Time: {}  Panels: {}", watch_display, grounds_passed);
+    let prev_scores_display = prev_scoring_res.0.iter().filter_map(|scoring_res| {
+        let ScoresResource { stopwatch: Some(stopwatch), grounds_passed } = scoring_res
+        else { return None; };
+        let watch_display = format!(
+            "{:02.0}:{:02.0}",
+            stopwatch.elapsed_secs() / 60.,
+            stopwatch.elapsed_secs() % 60.
+        );
+        let score_display = format!("Time: {}  Panels: {}", watch_display, grounds_passed);
+        Some(score_display)
+    });
+
     let frame = get_default_egui_frame();
     // println!(
     //     "Time: {}, grounds_passed: {}",
@@ -55,15 +72,15 @@ pub fn display_score(scoring_res: Res<ScoresResource>, mut egui_contexts: EguiCo
         .show(egui_contexts.ctx_mut(), |ui| {
             ui.vertical(|ui| {
                 ui.label(RichText::new("Score").heading());
-                ui.label(format!(
-                    "Time: {} Panels: {}",
-                    watch_display, grounds_passed
-                ));
+                ui.label(RichText::new(score_display).size(16.));
                 ui.separator();
+                if prev_scores_display.clone().count() > 0 {
+                    ui.label(RichText::new("Previous").heading());
+                    for score_display in prev_scores_display {
+                        ui.label(score_display);
+                    }
+                    ui.separator();
+                }
             });
         });
-}
-
-pub fn display_prev_scores(prev_scoring_res: Res<PreviousScoresRes>) {
-    println!("{:?}", prev_scoring_res);
 }

@@ -13,6 +13,7 @@ use crate::{
     systems::{
         camera::move_camera_focus_with_grounds,
         cleanup::cleanup,
+        egui::init_egui_context,
         ground::{
             color_grounds, handle_ground_game_over_sensor, handle_ground_sensor,
             handle_mid_ground_sensor, mark_cleanup_prev_grounds,
@@ -20,12 +21,9 @@ use crate::{
         lights::move_lighting_with_grounds,
         menu::auto_start_game_on_menu,
         scene::{handle_scene_events, scene_setup},
-        scoring::{
-            display_prev_scores, display_score, setup_scoring, update_grounds_passed,
-            update_stopwatch,
-        },
+        scoring::{display_scoreboard, setup_scoring, update_grounds_passed, update_stopwatch},
         walls::{handle_wall_events, pick_ground_point_raycast},
-        window::setup_window, egui::init_egui_context,
+        window::setup_window,
     },
 };
 
@@ -68,12 +66,7 @@ impl Plugin for KeepItRollingGamePlugin {
             .add_systems(OnEnter(GameState::InGame), setup_scoring)
             .add_systems(
                 Update,
-                (
-                    update_stopwatch,
-                    update_grounds_passed,
-                    display_score,
-                    display_prev_scores,
-                )
+                (update_stopwatch, update_grounds_passed, display_scoreboard)
                     .in_set(PluginSystemSet::InGame),
             )
             // scene...
