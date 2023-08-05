@@ -4,7 +4,7 @@ use bevy_rapier3d::prelude::*;
 use crate::{
     components::{
         BelongsToGround, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
-        GroundSurfaceSensor, MyCamera, MyLight, RollingBall,
+        GroundSurfaceSensor, MyCamera, MyLight, RollingBall, Cleanup,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::SceneEvent,
@@ -189,7 +189,16 @@ pub fn handle_scene_events(
             SceneEvent::Restart => {
                 // mark for cleanup
                 for entity in balls.iter() {
-                    // commands.entity(entity).insert(bundle);
+                    commands.entity(entity).insert(Cleanup::Recursive);
+                }
+                for entity in grounds.iter() {
+                    commands.entity(entity).insert(Cleanup::Recursive);
+                }
+                for entity in lights.iter() {
+                    commands.entity(entity).insert(Cleanup::Recursive);
+                }
+                for entity in cameras.iter() {
+                    commands.entity(entity).insert(Cleanup::Recursive);
                 }
             }
         }

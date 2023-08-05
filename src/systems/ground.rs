@@ -81,14 +81,13 @@ pub fn handle_mid_ground_sensor(
 
 #[allow(clippy::type_complexity, clippy::too_many_arguments)]
 pub fn handle_ground_game_over_sensor(
-    mut commands: Commands,
     balls: Query<Entity, (With<RollingBall>, With<Collider>)>,
     ground_game_over_sensor: Query<
         (Entity, &BelongsToGround),
         (With<GroundGameOverSensor>, With<Collider>),
     >,
     mut game_event: EventWriter<SceneEvent>,
-    mut ground_res: ResMut<GroundsResource>,
+    ground_res: Res<GroundsResource>,
     rapier_context: Res<RapierContext>,
 ) {
     let Ok(ball_ent) = balls.get_single() else { return; };

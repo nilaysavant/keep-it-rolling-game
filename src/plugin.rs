@@ -10,14 +10,15 @@ use crate::{
     resources::GroundsResource,
     systems::{
         camera::move_camera_focus_with_grounds,
+        cleanup::cleanup,
         ground::{
-            color_grounds, handle_ground_sensor, handle_mid_ground_sensor,
-            mark_cleanup_prev_grounds,
+            color_grounds, handle_ground_game_over_sensor, handle_ground_sensor,
+            handle_mid_ground_sensor, mark_cleanup_prev_grounds,
         },
         lights::move_lighting_with_grounds,
-        scene::scene_setup,
+        scene::{handle_scene_events, scene_setup},
         walls::{handle_wall_events, pick_ground_point_raycast},
-        window::setup_window, cleanup::cleanup,
+        window::setup_window,
     },
 };
 
@@ -45,6 +46,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // scene...
             .add_event::<SceneEvent>()
             .add_systems(Startup, scene_setup)
+            .add_systems(Update, (handle_scene_events,))
             // ground...
             .insert_resource(GroundsResource::default())
             .add_systems(
@@ -54,6 +56,7 @@ impl Plugin for KeepItRollingGamePlugin {
                     handle_mid_ground_sensor,
                     color_grounds,
                     mark_cleanup_prev_grounds,
+                    handle_ground_game_over_sensor,
                 ),
             )
             // walls...
