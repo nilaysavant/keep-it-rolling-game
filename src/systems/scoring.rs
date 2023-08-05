@@ -1,6 +1,6 @@
 use bevy::{prelude::*, time::Stopwatch};
 
-use crate::resources::{GroundsResource, ScoresResource};
+use crate::resources::{GroundsResource, ScoresResource, PreviousScoresRes};
 
 pub fn setup_scoring(mut scoring_res: ResMut<ScoresResource>, time: Res<Time>) {
     scoring_res.stopwatch = Some(Stopwatch::new());
@@ -34,8 +34,12 @@ pub fn display_score(scoring_res: Res<ScoresResource>) {
         stopwatch.elapsed_secs() / 60.,
         stopwatch.elapsed_secs() % 60.
     );
-    println!(
-        "Time: {}, grounds_passed: {}",
-        watch_display, grounds_passed
-    );
+    // println!(
+    //     "Time: {}, grounds_passed: {}",
+    //     watch_display, grounds_passed
+    // );
+}
+
+pub fn display_prev_scores(prev_scoring_res: Res<PreviousScoresRes>) {
+    println!("{:?}", prev_scoring_res);
 }

@@ -18,4 +18,4 @@ pub struct ScoresResource {
 
 #[derive(Clone, Resource, Default, Debug, Reflect, InspectorOptions)]
 #[reflect(Resource)]
-pub struct PreviousScores(pub Vec<ScoresResource>);
+pub struct PreviousScoresRes(pub Vec<ScoresResource>);

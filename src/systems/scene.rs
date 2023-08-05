@@ -8,7 +8,7 @@ use crate::{
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::SceneEvent,
-    resources::GroundsResource,
+    resources::{GroundsResource, PreviousScoresRes, ScoresResource},
     state::GameState,
 };
 
@@ -186,11 +186,15 @@ pub fn handle_scene_events(
     mut events: EventReader<SceneEvent>,
     mut next_state: ResMut<NextState<GameState>>,
     mut ground_res: ResMut<GroundsResource>,
+    scores_res: ResMut<ScoresResource>,
+    mut prev_scores_res: ResMut<PreviousScoresRes>,
 ) {
     for event in events.iter() {
         match event {
             SceneEvent::Start => {}
             SceneEvent::Restart => {
+                // push to prev scores
+                prev_scores_res.0.push(scores_res.clone());
                 // reset any resources...
                 *ground_res = GroundsResource::default();
                 // mark for cleanup
