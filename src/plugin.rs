@@ -10,7 +10,7 @@ use crate::{
     systems::{
         camera::move_camera_focus_with_grounds,
         lights::move_lighting_with_grounds,
-        physics::{
+        ground::{
             cleanup_marked, color_grounds, handle_ground_sensor, handle_mid_ground_sensor,
             mark_cleanup_prev_grounds,
         },
@@ -43,7 +43,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // .add_plugins(FlyCameraPlugin)
             // logic...
             .add_systems(Startup, scene_setup)
-            // physics...
+            // ground...
             .insert_resource(GroundsResource::default())
             .add_systems(
                 Update,
