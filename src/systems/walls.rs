@@ -190,7 +190,7 @@ fn draw_wall(
         .spawn((
             PbrBundle {
                 mesh: meshes.add(wall.clone()),
-                material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+                material: materials.add(Color::rgb(1., 1., 1.).into()),
                 transform,
                 ..default()
             },

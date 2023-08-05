@@ -130,7 +130,7 @@ pub fn spawn_ground(
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(ground_mesh.clone()),
-                    material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+                    material: materials.add(Color::GREEN.into()),
                     ..default()
                 },
                 ground_collider.clone(),

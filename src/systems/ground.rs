@@ -87,52 +87,31 @@ pub fn handle_mid_ground_sensor(
 
 #[allow(clippy::type_complexity)]
 pub fn color_grounds(
+    grounds: Query<&Cleanup, With<Ground>>,
     ground_materials: Query<(&BelongsToGround, &Handle<StandardMaterial>), With<GroundMesh>>,
-    ground_res: Res<GroundsResource>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let GroundsResource {
-        previous_ground,
-        current_ground,
-        next_ground,
-    } = *ground_res;
-
-    if let Some(previous_ground) = previous_ground {
-        for (BelongsToGround(ground_ent), mat_hdl) in ground_materials.iter() {
-            if *ground_ent == previous_ground {
-                let Some(mat)=materials.get_mut(mat_hdl) else { continue; };
-                mat.base_color = Color::YELLOW;
-            }
-        }
-    }
-    if let Some(current_ground) = current_ground {
-        for (BelongsToGround(ground_ent), mat_hdl) in ground_materials.iter() {
-            if *ground_ent == current_ground {
-                let Some(mat)=materials.get_mut(mat_hdl) else { continue; };
-                mat.base_color = Color::RED;
-            }
-        }
-    }
-    if let Some(next_ground) = next_ground {
-        for (BelongsToGround(ground_ent), mat_hdl) in ground_materials.iter() {
-            if *ground_ent == next_ground {
-                let Some(mat)=materials.get_mut(mat_hdl) else { continue; };
-                mat.base_color = Color::BLUE;
-            }
-        }
+    for (BelongsToGround(ground_ent), mat_hdl) in ground_materials.iter() {
+        // Get the grounds cleanup timer (i.e. also used as overheat timer)
+        let Ok(Cleanup::OnTimeout { timer }) = grounds.get(*ground_ent) else { continue; };
+        let remaining = timer.remaining_secs();
+        let Some(mat) = materials.get_mut(mat_hdl) else { continue; };
+        let mut new_color = mat.base_color.as_hsla_f32();
+        new_color[0] = Color::GREEN.as_hsla_f32()[0] * remaining / GROUND_OVERHEAT_DURATION_SECS;
+        mat.base_color = Color::hsla(new_color[0], new_color[1], new_color[2], new_color[3]);
     }
 }
 
-pub fn mark_cleanup_prev_grounds(mut commands: Commands, ground_res: Res<GroundsResource>) {
-    if !ground_res.is_changed() {
-        return;
-    }
-    let GroundsResource {
-            previous_ground: Some(previous_ground),
-            ..
-    } = *ground_res else { return; };
-    let Some(mut ent_commands) = commands.get_entity(previous_ground) else { return; };
-    ent_commands.insert(Cleanup::OnTimeout {
-        timer: Timer::from_seconds(15.0, TimerMode::Once),
-    });
-}
+// pub fn mark_cleanup_prev_grounds(mut commands: Commands, ground_res: Res<GroundsResource>) {
+//     if !ground_res.is_changed() {
+//         return;
+//     }
+//     let GroundsResource {
+//             previous_ground: Some(previous_ground),
+//             ..
+//     } = *ground_res else { return; };
+//     let Some(mut ent_commands) = commands.get_entity(previous_ground) else { return; };
+//     ent_commands.insert(Cleanup::OnTimeout {
+//         timer: Timer::from_seconds(15.0, TimerMode::Once),
+//     });
+// }
