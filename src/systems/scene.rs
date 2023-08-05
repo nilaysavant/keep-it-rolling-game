@@ -8,6 +8,7 @@ use crate::{
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::SceneEvent,
+    materials::glowy::GlowyMaterial,
     resources::{GroundsResource, PreviousScoresRes, ScoresResource},
     state::GameState,
 };
@@ -17,6 +18,7 @@ pub fn scene_setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut glowmaterials: ResMut<Assets<GlowyMaterial>>,
 ) {
     // ground...
     let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
@@ -52,15 +54,16 @@ pub fn scene_setup(
     ));
 
     // ball...
+    let glowy_mat_hdl = glowmaterials.add(GlowyMaterial { env_texture: None });
     let ball_mesh = Mesh::from(shape::UVSphere {
         radius: 0.5,
         ..default()
     });
     let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
     commands.spawn((
-        PbrBundle {
+        MaterialMeshBundle {
             mesh: meshes.add(ball_mesh),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            material: glowy_mat_hdl.clone(),
             transform: Transform::from_xyz(0.0, 2.5, -1.0),
             ..default()
         },

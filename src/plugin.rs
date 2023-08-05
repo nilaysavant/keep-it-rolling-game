@@ -7,6 +7,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     events::{SceneEvent, WallEvent},
+    materials::glowy::GlowyMaterial,
     plugins::{FlyCameraPlugin, FpsDisplayPlugin},
     resources::{GroundsResource, PreviousScoresRes, ScoresResource, SettingsResource},
     state::GameState,
@@ -19,7 +20,9 @@ use crate::{
             handle_ground_game_over_sensor, move_game_over_sensors_with_current_ground,
         },
         ground::{
-            color_grounds, handle_ground_sensor, handle_mid_ground_sensor,
+            color_grounds,
+            handle_ground_sensor,
+            handle_mid_ground_sensor,
             // mark_cleanup_prev_grounds,
         },
         lights::move_lighting_with_grounds,
@@ -54,6 +57,8 @@ impl Plugin for KeepItRollingGamePlugin {
             // fly cam
             // .add_plugins(FlyCameraPlugin)
             .add_plugins(FpsDisplayPlugin)
+            // materials
+            .add_plugins(MaterialPlugin::<GlowyMaterial>::default())
             // state and system sets...
             .add_state::<GameState>()
             .configure_set(
