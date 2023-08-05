@@ -72,7 +72,7 @@ pub fn display_scoreboard(
         .show(egui_contexts.ctx_mut(), |ui| {
             ui.vertical(|ui| {
                 ui.label(RichText::new("Score").heading());
-                ui.label(RichText::new(score_display).size(16.));
+                ui.label(RichText::new(score_display).size(17.));
                 ui.separator();
                 if prev_scores_display.clone().count() > 0 {
                     ui.label(RichText::new("Previous").heading());
