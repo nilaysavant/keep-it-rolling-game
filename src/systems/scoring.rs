@@ -3,8 +3,12 @@ use bevy_egui::{
     egui::{self, FontId, RichText},
     EguiContexts,
 };
+use bevy_rapier3d::prelude::Velocity;
 
-use crate::resources::{GroundsResource, PreviousScoresRes, ScoresResource};
+use crate::{
+    components::RollingBall,
+    resources::{GroundsResource, PreviousScoresRes, ScoresResource},
+};
 
 use super::egui::get_default_egui_frame;
 
@@ -34,6 +38,7 @@ pub fn update_grounds_passed(
 }
 
 pub fn display_scoreboard(
+    query_ball: Query<&Velocity, With<RollingBall>>,
     scoring_res: Res<ScoresResource>,
     prev_scoring_res: Res<PreviousScoresRes>,
     mut egui_contexts: EguiContexts,
@@ -56,6 +61,7 @@ pub fn display_scoreboard(
         let score_display = format!("Time: {}  Panels: {}", watch_display, grounds_passed);
         Some(score_display)
     });
+    let Ok(ball_vel) = query_ball.get_single() else { return; };
 
     let frame = get_default_egui_frame();
     // println!(
@@ -72,7 +78,14 @@ pub fn display_scoreboard(
         .show(egui_contexts.ctx_mut(), |ui| {
             ui.vertical(|ui| {
                 ui.label(RichText::new("Score").heading());
-                ui.label(RichText::new(score_display).size(17.));
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new(score_display).size(17.));
+                    ui.separator();
+                    ui.label(
+                        RichText::new(format!("Speed: {:0.0}", ball_vel.linvel.length() * 10.))
+                            .size(17.),
+                    );
+                });
                 ui.separator();
                 if prev_scores_display.clone().count() > 0 {
                     ui.label(RichText::new("Previous").heading());
