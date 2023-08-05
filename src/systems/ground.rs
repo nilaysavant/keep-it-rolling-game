@@ -126,7 +126,7 @@ pub fn mark_cleanup_prev_grounds(mut commands: Commands, ground_res: Res<Grounds
     } = *ground_res else { return; };
     let Some(mut ent_commands) = commands.get_entity(previous_ground) else { return; };
     ent_commands.insert(Cleanup {
-        timer: Timer::from_seconds(5.0, TimerMode::Once),
+        timer: Timer::from_seconds(15.0, TimerMode::Once),
     });
 }
 
