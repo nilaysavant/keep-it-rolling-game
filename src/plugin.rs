@@ -17,6 +17,7 @@ use crate::{
             handle_mid_ground_sensor, mark_cleanup_prev_grounds,
         },
         lights::move_lighting_with_grounds,
+        menu::auto_start_game_on_menu,
         scene::{handle_scene_events, scene_setup},
         walls::{handle_wall_events, pick_ground_point_raycast},
         window::setup_window,
@@ -50,6 +51,8 @@ impl Plugin for KeepItRollingGamePlugin {
                 Update,
                 PluginSystemSet::InGame.run_if(in_state(GameState::InGame)),
             )
+            // menu...
+            .add_systems(OnEnter(GameState::Menu), auto_start_game_on_menu)
             // scene...
             .add_event::<SceneEvent>()
             .add_systems(OnEnter(GameState::InGame), scene_setup)

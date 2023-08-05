@@ -3,6 +3,7 @@ pub mod camera;
 pub mod cleanup;
 pub mod ground;
 pub mod lights;
+pub mod menu;
 pub mod scene;
 pub mod walls;
 pub mod window;

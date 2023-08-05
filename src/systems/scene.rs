@@ -3,12 +3,13 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
-        GroundSurfaceSensor, MyCamera, MyLight, RollingBall, Cleanup,
+        BelongsToGround, Cleanup, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
+        GroundSurfaceSensor, MyCamera, MyLight, RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::SceneEvent,
     resources::GroundsResource,
+    state::GameState,
 };
 
 /// set up a simple 3D scene
@@ -175,6 +176,7 @@ pub fn spawn_ground(
     Some(ground_ent)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn handle_scene_events(
     mut commands: Commands,
     balls: Query<Entity, With<RollingBall>>,
@@ -182,11 +184,15 @@ pub fn handle_scene_events(
     lights: Query<Entity, With<MyLight>>,
     cameras: Query<Entity, With<MyCamera>>,
     mut events: EventReader<SceneEvent>,
+    mut next_state: ResMut<NextState<GameState>>,
+    mut ground_res: ResMut<GroundsResource>,
 ) {
     for event in events.iter() {
         match event {
             SceneEvent::Start => {}
             SceneEvent::Restart => {
+                // reset any resources...
+                *ground_res = GroundsResource::default();
                 // mark for cleanup
                 for entity in balls.iter() {
                     commands.entity(entity).insert(Cleanup::Recursive);
@@ -200,6 +206,7 @@ pub fn handle_scene_events(
                 for entity in cameras.iter() {
                     commands.entity(entity).insert(Cleanup::Recursive);
                 }
+                next_state.set(GameState::Menu);
             }
         }
     }
