@@ -74,7 +74,7 @@ pub fn handle_mid_ground_sensor(
             transform.rotation = Quat::from_axis_angle(Vec3::X, GROUND_ANGLE);
             transform.translation.y +=
                 -(GROUND_LENGTH / GROUND_ANGLE.cos()) * 0.385 * GROUND_THICKNESS;
-            transform.translation.z += GROUND_LENGTH - 0.1;
+            transform.translation.z += GROUND_LENGTH - 0.2;
             commands
                 .entity(ground_ent)
                 .insert(TransformBundle::from_transform(transform));
