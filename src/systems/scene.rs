@@ -3,10 +3,11 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, MyCamera,
-        MyLight, RollingBall,
+        BelongsToGround, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
+        GroundSurfaceSensor, MyCamera, MyLight, RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
+    events::SceneEvent,
     resources::GroundsResource,
 };
 
@@ -98,6 +99,7 @@ pub fn spawn_ground(
         .entity(ground_ent)
         .insert((Ground, BelongsToGround(ground_ent), Ccd::default()))
         .with_children(|commands| {
+            // main ground mesh...
             let ground_mesh: Mesh =
                 shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS, GROUND_LENGTH).into();
             let Some(ground_collider) = Collider::from_bevy_mesh(
@@ -127,6 +129,7 @@ pub fn spawn_ground(
                 GroundSurfaceSensor,
                 BelongsToGround(ground_ent),
             ));
+            // mid sensor...
             let ground_mid_sensor_mesh: Mesh =
                 shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS * 4.0, GROUND_LENGTH * 0.1).into();
             let Some(ground_mid_collider) = Collider::from_bevy_mesh(
@@ -146,6 +149,49 @@ pub fn spawn_ground(
                 GroundMidSensor,
                 BelongsToGround(ground_ent),
             ));
+            // game over sensor(s)...
+            let game_over_sensor_mesh: Mesh = shape::Box::new(
+                GROUND_WIDTH * 1.5,
+                GROUND_THICKNESS * 20.,
+                GROUND_LENGTH * 1.5,
+            )
+            .into();
+            let Some(game_over_sen_collider) = Collider::from_bevy_mesh(
+                &game_over_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
+            commands.spawn((
+                PbrBundle {
+                    mesh: meshes.add(game_over_sensor_mesh.clone()),
+                    material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
+                    transform: Transform::from_translation(Vec3::Y * 2.0 + Vec3::Z * 1.0),
+                    visibility: Visibility::Hidden,
+                    ..default()
+                },
+                game_over_sen_collider.clone(),
+                Sensor,
+                GroundGameOverSensor,
+                BelongsToGround(ground_ent),
+            ));
         });
     Some(ground_ent)
+}
+
+pub fn handle_scene_events(
+    mut commands: Commands,
+    balls: Query<Entity, With<RollingBall>>,
+    grounds: Query<Entity, With<Ground>>,
+    lights: Query<Entity, With<MyLight>>,
+    cameras: Query<Entity, With<MyCamera>>,
+    mut events: EventReader<SceneEvent>,
+) {
+    for event in events.iter() {
+        match event {
+            SceneEvent::Start => {}
+            SceneEvent::Restart => {
+                // mark for cleanup
+                for entity in balls.iter() {
+                    // commands.entity(entity).insert(bundle);
+                }
+            }
+        }
+    }
 }

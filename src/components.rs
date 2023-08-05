@@ -19,9 +19,17 @@ pub struct GroundSurfaceSensor;
 pub struct GroundMidSensor;
 
 #[derive(Debug, Component)]
-pub struct Cleanup {
-    /// Cleanup after timer completes.
-    pub timer: Timer,
+pub struct GroundGameOverSensor;
+
+#[derive(Debug, Component)]
+pub enum Cleanup {
+    OnTimeout {
+        /// Cleanup after timer completes.
+        timer: Timer,
+    },
+    OnlyEntity,
+    OnlyDescendants,
+    Recursive,
 }
 
 #[derive(Debug, Component)]

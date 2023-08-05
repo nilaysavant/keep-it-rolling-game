@@ -3,10 +3,11 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Cleanup, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor,
-        RollingBall,
+        BelongsToGround, Cleanup, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
+        GroundSurfaceSensor, RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS},
+    events::SceneEvent,
     resources::GroundsResource,
 };
 
@@ -78,6 +79,30 @@ pub fn handle_mid_ground_sensor(
     }
 }
 
+#[allow(clippy::type_complexity, clippy::too_many_arguments)]
+pub fn handle_ground_game_over_sensor(
+    mut commands: Commands,
+    balls: Query<Entity, (With<RollingBall>, With<Collider>)>,
+    ground_game_over_sensor: Query<
+        (Entity, &BelongsToGround),
+        (With<GroundGameOverSensor>, With<Collider>),
+    >,
+    mut game_event: EventWriter<SceneEvent>,
+    mut ground_res: ResMut<GroundsResource>,
+    rapier_context: Res<RapierContext>,
+) {
+    let Ok(ball_ent) = balls.get_single() else { return; };
+    for (sensor_ent, BelongsToGround(ground_ent)) in ground_game_over_sensor.iter() {
+        if ground_res.current_ground != Some(*ground_ent) {
+            continue;
+        }
+        let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent ) else { continue; };
+        if is_intersecting {
+            game_event.send(SceneEvent::Restart);
+        }
+    }
+}
+
 #[allow(clippy::type_complexity)]
 pub fn color_grounds(
     ground_materials: Query<(&BelongsToGround, &Handle<StandardMaterial>), With<GroundMesh>>,
@@ -125,20 +150,7 @@ pub fn mark_cleanup_prev_grounds(mut commands: Commands, ground_res: Res<Grounds
             ..
     } = *ground_res else { return; };
     let Some(mut ent_commands) = commands.get_entity(previous_ground) else { return; };
-    ent_commands.insert(Cleanup {
+    ent_commands.insert(Cleanup::OnTimeout {
         timer: Timer::from_seconds(15.0, TimerMode::Once),
     });
-}
-
-pub fn cleanup_marked(
-    mut commands: Commands,
-    mut query: Query<(Entity, &mut Cleanup)>,
-    time: Res<Time>,
-) {
-    for (entity, mut cleanup) in query.iter_mut() {
-        if cleanup.timer.tick(time.delta()).finished() {
-            let Some(ent_commands) = commands.get_entity(entity) else { continue; };
-            ent_commands.despawn_recursive();
-        }
-    }
 }

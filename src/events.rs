@@ -9,3 +9,9 @@ pub enum WallEvent {
     HoverStop,
     Draw,
 }
+
+#[derive(Debug, Clone, Event)]
+pub enum SceneEvent {
+    Start,
+    Restart,
+}
