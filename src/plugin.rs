@@ -8,7 +8,7 @@ use bevy_rapier3d::prelude::*;
 use crate::{
     events::{SceneEvent, WallEvent},
     plugins::{FlyCameraPlugin, FpsDisplayPlugin},
-    resources::{GroundsResource, PreviousScoresRes, ScoresResource},
+    resources::{GroundsResource, PreviousScoresRes, ScoresResource, SettingsResource},
     state::GameState,
     systems::{
         camera::move_camera_focus_with_grounds,
@@ -25,6 +25,7 @@ use crate::{
         menu::auto_start_game_on_menu,
         scene::{handle_scene_events, scene_setup},
         scoring::{display_scoreboard, setup_scoring, update_grounds_passed, update_stopwatch},
+        settings::display_settings,
         walls::{handle_wall_events, pick_ground_point_raycast},
         window::setup_window,
     },
@@ -60,8 +61,10 @@ impl Plugin for KeepItRollingGamePlugin {
             )
             // egui
             .add_plugins(EguiPlugin)
-            // egui init...
             .add_systems(Startup, init_egui_context)
+            // settings...
+            .insert_resource(SettingsResource::default())
+            .add_systems(Update, display_settings)
             // menu...
             .add_systems(OnEnter(GameState::Menu), auto_start_game_on_menu)
             // scoring...

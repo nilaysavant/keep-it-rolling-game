@@ -19,3 +19,17 @@ pub struct ScoresResource {
 #[derive(Clone, Resource, Default, Debug, Reflect, InspectorOptions)]
 #[reflect(Resource)]
 pub struct PreviousScoresRes(pub Vec<ScoresResource>);
+
+#[derive(Clone, Resource, Debug, Reflect, InspectorOptions)]
+#[reflect(Resource)]
+pub struct SettingsResource {
+    pub rotation_sensitivity: f32,
+}
+
+impl Default for SettingsResource {
+    fn default() -> Self {
+        Self {
+            rotation_sensitivity: 0.05,
+        }
+    }
+}

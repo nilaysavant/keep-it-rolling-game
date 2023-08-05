@@ -23,7 +23,7 @@ pub fn get_default_egui_frame() -> egui::Frame {
         fill: Color32::from_rgba_unmultiplied(0, 0, 0, 125),
         stroke: Stroke::NONE,
         inner_margin: Margin::symmetric(8.0, 8.0),
-        outer_margin: Margin::symmetric(-8.0, -8.0),
+        outer_margin: Margin::symmetric(8.0, 8.0),
     };
     frame
 }

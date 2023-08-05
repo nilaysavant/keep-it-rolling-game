@@ -8,5 +8,6 @@ pub mod lights;
 pub mod menu;
 pub mod scene;
 pub mod scoring;
+pub mod settings;
 pub mod walls;
 pub mod window;
