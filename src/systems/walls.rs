@@ -62,8 +62,9 @@ pub fn pick_ground_point_raycast(
         let RayIntersection { point, normal, .. } = intersection;
         let point_local = ground_transform.affine().inverse().transform_point(point);
         let normal_local = ground_transform.affine().inverse().transform_point(normal);
-        gizmos.ray(point, normal, Color::CYAN);
+        // gizmos.ray(point, normal, Color::CYAN);
         gizmos.circle(point, normal, 0.1, Color::CYAN);
+        gizmos.circle(point, normal, 0.5, Color::CYAN);
 
         if key_input.pressed(KeyCode::A) {
             *wall_angle += settings_res.wall_rotation_sensitivity;
