@@ -3,7 +3,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Cleanup, Ground, GameOverSensor, GroundMesh, GroundMidSensor,
+        BelongsToGround, Cleanup, GameOverSensor, Ground, GroundMesh, GroundMidSensor,
         GroundSurfaceSensor, MyCamera, MyLight, RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
@@ -183,6 +183,7 @@ pub fn handle_scene_events(
     grounds: Query<Entity, With<Ground>>,
     lights: Query<Entity, With<MyLight>>,
     cameras: Query<Entity, With<MyCamera>>,
+    game_over_sensor: Query<Entity, With<GameOverSensor>>,
     mut events: EventReader<SceneEvent>,
     mut next_state: ResMut<NextState<GameState>>,
     mut ground_res: ResMut<GroundsResource>,
@@ -208,6 +209,9 @@ pub fn handle_scene_events(
                     commands.entity(entity).insert(Cleanup::Recursive);
                 }
                 for entity in cameras.iter() {
+                    commands.entity(entity).insert(Cleanup::Recursive);
+                }
+                for entity in game_over_sensor.iter() {
                     commands.entity(entity).insert(Cleanup::Recursive);
                 }
                 next_state.set(GameState::Menu);
