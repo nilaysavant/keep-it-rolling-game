@@ -19,14 +19,13 @@ pub fn pick_ground_point_raycast(
     windows: Query<&Window, With<PrimaryWindow>>,
     query_grounds: Query<&GlobalTransform, With<Ground>>,
     query_ground_meshes: Query<&BelongsToGround, (With<GroundMesh>, With<Collider>)>,
-    mut temp_walls: Query<With<TempWall>>,
+    temp_walls: Query<With<TempWall>>,
     ground_res: Res<GroundsResource>,
     rapier_context: Res<RapierContext>,
     cameras: Query<(&Camera, &GlobalTransform)>,
     mut gizmos: Gizmos,
     mouse_btn_input: Res<Input<MouseButton>>,
     key_input: Res<Input<KeyCode>>,
-    mut scroll_evr: EventReader<MouseWheel>,
     mut wall_event: EventWriter<WallEvent>,
     mut wall_angle: Local<f32>,
 ) {
@@ -65,20 +64,11 @@ pub fn pick_ground_point_raycast(
                 gizmos.ray(point, normal, Color::CYAN);
                 gizmos.circle(point, normal, 0.1, Color::CYAN);
 
-                for ev in scroll_evr.iter() {
-                    match ev.unit {
-                        MouseScrollUnit::Line => {
-                            *wall_angle = ev.y * 0.5;
-                        }
-                        MouseScrollUnit::Pixel => {
-                            *wall_angle = ev.y * 0.1;
-                        }
-                    }
-                }
+                let rotation_sensitivity = 0.05;
                 if key_input.pressed(KeyCode::A) {
-                    *wall_angle += 0.05;
+                    *wall_angle += rotation_sensitivity;
                 } else if key_input.pressed(KeyCode::D) {
-                    *wall_angle -= 0.05;
+                    *wall_angle -= rotation_sensitivity;
                 }
                 let mut transform =
                     Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);
