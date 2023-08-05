@@ -48,7 +48,7 @@ impl Plugin for KeepItRollingGamePlugin {
             // physics plugins...
             .add_plugins((
                 RapierPhysicsPlugin::<NoUserData>::default(),
-                RapierDebugRenderPlugin::default(),
+                // RapierDebugRenderPlugin::default(),
             ))
             // fly cam
             // .add_plugins(FlyCameraPlugin)
@@ -123,9 +123,9 @@ impl Plugin for KeepItRollingGamePlugin {
             // cleanup
             .add_systems(First, cleanup)
             // debug...
-            .add_plugins(WorldInspectorPlugin::default())
+            // .add_plugins(WorldInspectorPlugin::default())
             .register_type::<GroundsResource>()
-            .add_plugins(ResourceInspectorPlugin::<GroundsResource>::default())
+            // .add_plugins(ResourceInspectorPlugin::<GroundsResource>::default())
             // other...
             .add_systems(Startup, || info!("Game Started..."));
     }
