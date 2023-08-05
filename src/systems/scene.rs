@@ -33,18 +33,18 @@ pub fn scene_setup(
         ..default()
     });
     let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
-    // commands.spawn((
-    //     PbrBundle {
-    //         mesh: meshes.add(ball_mesh),
-    //         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-    //         transform: Transform::from_xyz(0.0, 2.5, -1.0),
-    //         ..default()
-    //     },
-    //     ball_collider,
-    //     RigidBody::Dynamic,
-    //     RollingBall,
-    //     Velocity::default(),
-    // ));
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(ball_mesh),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(0.0, 2.5, -1.0),
+            ..default()
+        },
+        ball_collider,
+        RigidBody::Dynamic,
+        RollingBall,
+        Velocity::default(),
+    ));
 
     // light...
     let light_transform = Transform::from_xyz(1.0, 8.0, 0.0);

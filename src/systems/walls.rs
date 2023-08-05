@@ -91,7 +91,7 @@ pub fn pick_ground_point_raycast(
 #[allow(clippy::too_many_arguments)]
 pub fn handle_wall_events(
     mut commands: Commands,
-    mut temp_walls: Query<(Entity, &mut Transform, &mut Visibility), With<TempWall>>,
+    mut temp_walls: Query<(Entity, &mut Transform, &mut Visibility, &Parent), With<TempWall>>,
     mut wall_events: EventReader<WallEvent>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -109,17 +109,21 @@ pub fn handle_wall_events(
                     ) else { continue; };
                     commands.entity(wall_ent).insert(TempWall);
                 } else {
-                    let Ok((entity, mut temp_wall_transform, mut visibility)) = temp_walls.get_single_mut() else { continue; };
+                    let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
                     *temp_wall_transform = *transform;
                     *visibility = Visibility::Visible;
+                    if parent.get() != *ground {
+                        commands.entity(entity).remove_parent();
+                        commands.entity(*ground).push_children(&[entity]);
+                    }
                 }
             }
             WallEvent::HoverStop => {
-                let Ok((entity, mut temp_wall_transform, mut visibility)) = temp_walls.get_single_mut() else { continue; };
+                let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
                 *visibility = Visibility::Hidden;
             }
             WallEvent::Draw => {
-                let Ok((entity, mut temp_wall_transform, mut visibility)) = temp_walls.get_single_mut() else { continue; };
+                let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
                 commands.entity(entity).insert(Wall).remove::<TempWall>();
             }
         }
