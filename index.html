@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Keep It Rollin Game</title>
+    <link data-trunk rel="copy-dir" href="assets" />
+    <link data-trunk rel="copy-dir" href="js" />
+    <link data-trunk rel="css" href="styles/global.css" />
+  </head>
+  <body>
+    <link
+      data-trunk
+      rel="rust"
+      data-type="main"
+      href="Cargo.toml"
+      data-bin="keep-it-rolling-game"
+      data-wasm-opt="0"
+    />
+    <div class="container">
+      <span id="wasm-loading-text" class="container__loadingText">Loading...</span>
+      <canvas id="my-game"></canvas>
+    </div>
+    <script data-trunk src="js/restart-audio-context.js" />
+  </body>
+</html>
