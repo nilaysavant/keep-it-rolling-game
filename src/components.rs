@@ -28,6 +28,9 @@ pub struct Cleanup {
 pub struct Wall;
 
 #[derive(Debug, Component)]
+pub struct TempWall;
+
+#[derive(Debug, Component)]
 pub struct MyLight {
     pub init_transform: Transform,
 }

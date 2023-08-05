@@ -5,17 +5,18 @@ use bevy_inspector_egui::quick::{ResourceInspectorPlugin, WorldInspectorPlugin};
 use bevy_rapier3d::prelude::*;
 
 use crate::{
+    events::WallEvent,
     plugins::FlyCameraPlugin,
     resources::GroundsResource,
     systems::{
         camera::move_camera_focus_with_grounds,
-        lights::move_lighting_with_grounds,
         ground::{
             cleanup_marked, color_grounds, handle_ground_sensor, handle_mid_ground_sensor,
             mark_cleanup_prev_grounds,
         },
+        lights::move_lighting_with_grounds,
         scene::scene_setup,
-        walls::pick_ground_point_raycast,
+        walls::{handle_wall_events, pick_ground_point_raycast},
         window::setup_window,
     },
 };
@@ -56,7 +57,8 @@ impl Plugin for KeepItRollingGamePlugin {
             )
             .add_systems(First, cleanup_marked)
             // walls...
-            .add_systems(Update, (pick_ground_point_raycast,))
+            .add_event::<WallEvent>()
+            .add_systems(Update, (pick_ground_point_raycast, handle_wall_events))
             // camera
             .add_systems(Update, move_camera_focus_with_grounds)
             // lights
