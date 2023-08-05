@@ -65,14 +65,15 @@ pub fn scene_setup(
 
     let zoom_out_fact = 2.2;
     let cam_transform = Transform::from_xyz(
-        -2.0 * zoom_out_fact,
+        -4.0 * zoom_out_fact,
         4.5 * zoom_out_fact,
         6.0 * zoom_out_fact,
-    );
+    )
+    .looking_at(Vec3::Z * 5., Vec3::Y);
     // camera...
     commands.spawn((
         Camera3dBundle {
-            transform: cam_transform.looking_at(Vec3::ZERO, Vec3::Y),
+            transform: cam_transform,
             ..default()
         },
         MyCamera {
