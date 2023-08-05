@@ -7,7 +7,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     events::{SceneEvent, WallEvent},
-    plugins::FlyCameraPlugin,
+    plugins::{FlyCameraPlugin, FpsDisplayPlugin},
     resources::{GroundsResource, PreviousScoresRes, ScoresResource},
     state::GameState,
     systems::{
@@ -51,6 +51,7 @@ impl Plugin for KeepItRollingGamePlugin {
             ))
             // fly cam
             // .add_plugins(FlyCameraPlugin)
+            .add_plugins(FpsDisplayPlugin)
             // state and system sets...
             .add_state::<GameState>()
             .configure_set(
