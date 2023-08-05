@@ -84,10 +84,20 @@ pub fn pick_ground_point_raycast(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
 pub fn handle_wall_events(
     mut commands: Commands,
-    mut temp_walls: Query<(Entity, &mut Transform, &mut Visibility, &Parent), With<TempWall>>,
+    mut temp_walls: Query<
+        (
+            Entity,
+            &mut Transform,
+            &mut Visibility,
+            &Parent,
+            &Handle<Mesh>,
+            &Handle<StandardMaterial>,
+        ),
+        With<TempWall>,
+    >,
     mut wall_events: EventReader<WallEvent>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -102,12 +112,23 @@ pub fn handle_wall_events(
                         &mut materials,
                         *transform,
                         ground,
+                        false,
                     ) else { continue; };
                     commands.entity(wall_ent).insert(TempWall);
                 } else {
-                    let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
+                    let Ok((
+                        entity,
+                        mut temp_wall_transform,
+                        mut visibility,
+                        parent,
+                        mesh_hdl,
+                        mat_hdl,
+                    )) = temp_walls.get_single_mut() else { continue; };
                     *temp_wall_transform = *transform;
                     *visibility = Visibility::Visible;
+                    let Some(wall_mat) = materials.get_mut(mat_hdl) else { continue; };
+                    wall_mat.alpha_mode = AlphaMode::Blend;
+                    wall_mat.base_color.set_a(0.5);
                     if parent.get() != *ground {
                         commands.entity(entity).remove_parent();
                         commands.entity(*ground).push_children(&[entity]);
@@ -115,12 +136,36 @@ pub fn handle_wall_events(
                 }
             }
             WallEvent::HoverStop => {
-                let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
+                let Ok((
+                        entity,
+                        mut temp_wall_transform,
+                        mut visibility,
+                        parent,
+                        mesh_hdl,
+                        mat_hdl,
+                    )) = temp_walls.get_single_mut() else { continue; };
                 *visibility = Visibility::Hidden;
             }
             WallEvent::Draw => {
-                let Ok((entity, mut temp_wall_transform, mut visibility, parent)) = temp_walls.get_single_mut() else { continue; };
-                commands.entity(entity).insert(Wall).remove::<TempWall>();
+                let Ok((
+                        entity,
+                        mut temp_wall_transform,
+                        mut visibility,
+                        parent,
+                        mesh_hdl,
+                        mat_hdl,
+                    )) = temp_walls.get_single_mut() else { continue; };
+                let Some(wall_mesh) = meshes.get(mesh_hdl) else { continue; };
+                let Some(collider) = Collider::from_bevy_mesh(
+                        wall_mesh, &ComputedColliderShape::TriMesh) else { continue; };
+                let Some(wall_mat) = materials.get_mut(mat_hdl) else { continue; };
+                wall_mat.alpha_mode = AlphaMode::Opaque;
+                wall_mat.base_color.set_a(1.);
+                commands
+                    .entity(entity)
+                    .insert(collider.clone())
+                    .insert(Wall)
+                    .remove::<TempWall>();
             }
         }
     }
@@ -132,13 +177,12 @@ fn draw_wall(
     materials: &mut ResMut<'_, Assets<StandardMaterial>>,
     transform: Transform,
     ground_ent: &Entity,
+    add_collider: bool,
 ) -> Option<Entity> {
     let wall_x = GROUND_LENGTH / 3.5;
     let wall_y = GROUND_THICKNESS * 3.;
     let wall_z = GROUND_LENGTH * 0.01;
     let wall: Mesh = shape::Box::new(wall_x, wall_y, wall_z).into();
-    let Some(ground_collider) = Collider::from_bevy_mesh(
-        &wall, &ComputedColliderShape::TriMesh) else { return None; };
     let wall_ent = commands
         .spawn((
             PbrBundle {
@@ -147,11 +191,15 @@ fn draw_wall(
                 transform,
                 ..default()
             },
-            ground_collider.clone(),
             RigidBody::Fixed,
             BelongsToGround(*ground_ent),
         ))
         .id();
+    if add_collider {
+        let Some(collider) = Collider::from_bevy_mesh(
+            &wall, &ComputedColliderShape::TriMesh) else { return None; };
+        commands.entity(wall_ent).insert(collider.clone());
+    }
     commands.entity(*ground_ent).push_children(&[wall_ent]);
     Some(wall_ent)
 }
