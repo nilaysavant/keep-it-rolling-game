@@ -19,7 +19,9 @@ pub struct GroundSurfaceSensor;
 pub struct GroundMidSensor;
 
 #[derive(Debug, Component)]
-pub struct GroundGameOverSensor;
+pub struct GroundGameOverSensor {
+    pub init_transform: Transform,
+}
 
 #[derive(Debug, Component)]
 pub enum Cleanup {

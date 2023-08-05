@@ -6,7 +6,7 @@ use crate::{
         BelongsToGround, Cleanup, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
         GroundSurfaceSensor, RollingBall,
     },
-    constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS},
+    constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_OVERHEAT_DURATION_SECS, GROUND_THICKNESS},
     events::SceneEvent,
     resources::GroundsResource,
 };
@@ -15,6 +15,7 @@ use super::scene::spawn_ground;
 
 #[allow(clippy::type_complexity)]
 pub fn handle_ground_sensor(
+    mut commands: Commands,
     balls: Query<Entity, (With<RollingBall>, With<Collider>)>,
     ground_sensors: Query<(Entity, &BelongsToGround), (With<GroundSurfaceSensor>, With<Collider>)>,
     mut ground_res: ResMut<GroundsResource>,
@@ -36,6 +37,11 @@ pub fn handle_ground_sensor(
         ground_res.previous_ground = ground_res.current_ground;
         ground_res.current_ground = active_ground;
         ground_res.next_ground = None;
+        if let Some(active_ground) = active_ground {
+            commands.entity(active_ground).insert(Cleanup::OnTimeout {
+                timer: Timer::from_seconds(GROUND_OVERHEAT_DURATION_SECS, TimerMode::Once),
+            });
+        }
     }
 }
 
@@ -80,21 +86,34 @@ pub fn handle_mid_ground_sensor(
 }
 
 #[allow(clippy::type_complexity, clippy::too_many_arguments)]
+pub fn move_game_over_sensors_with_current_ground(
+    grounds: Query<&Transform, With<Ground>>,
+    mut ground_game_over_sensor: Query<
+        (&mut Transform, &GroundGameOverSensor),
+        (With<Collider>, Without<Ground>),
+    >,
+    ground_res: Res<GroundsResource>,
+) {
+    for (mut sensor_transform, GroundGameOverSensor { init_transform }) in
+        ground_game_over_sensor.iter_mut()
+    {
+        let Some(current_ground) = ground_res.current_ground else { continue; };
+        let Ok(curr_ground_transform) = grounds.get(current_ground) else { continue; };
+        let mut new_transform = *curr_ground_transform;
+        new_transform.translation += init_transform.translation;
+        *sensor_transform = new_transform;
+    }
+}
+
+#[allow(clippy::type_complexity, clippy::too_many_arguments)]
 pub fn handle_ground_game_over_sensor(
     balls: Query<Entity, (With<RollingBall>, With<Collider>)>,
-    ground_game_over_sensor: Query<
-        (Entity, &BelongsToGround),
-        (With<GroundGameOverSensor>, With<Collider>),
-    >,
+    ground_game_over_sensor: Query<Entity, (With<GroundGameOverSensor>, With<Collider>)>,
     mut game_event: EventWriter<SceneEvent>,
-    ground_res: Res<GroundsResource>,
     rapier_context: Res<RapierContext>,
 ) {
     let Ok(ball_ent) = balls.get_single() else { return; };
-    for (sensor_ent, BelongsToGround(ground_ent)) in ground_game_over_sensor.iter() {
-        if ground_res.current_ground != Some(*ground_ent) {
-            continue;
-        }
+    for sensor_ent in ground_game_over_sensor.iter() {
         let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent ) else { continue; };
         if is_intersecting {
             game_event.send(SceneEvent::Restart);

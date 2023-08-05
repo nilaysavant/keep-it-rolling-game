@@ -17,6 +17,7 @@ use crate::{
         ground::{
             color_grounds, handle_ground_game_over_sensor, handle_ground_sensor,
             handle_mid_ground_sensor, mark_cleanup_prev_grounds,
+            move_game_over_sensors_with_current_ground,
         },
         lights::move_lighting_with_grounds,
         menu::auto_start_game_on_menu,
@@ -86,6 +87,7 @@ impl Plugin for KeepItRollingGamePlugin {
                     color_grounds,
                     mark_cleanup_prev_grounds,
                     handle_ground_game_over_sensor,
+                    move_game_over_sensors_with_current_ground,
                 )
                     .in_set(PluginSystemSet::InGame),
             )

@@ -17,7 +17,6 @@ pub fn scene_setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut grounds_resource: ResMut<GroundsResource>,
 ) {
     // ground...
     let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
@@ -27,7 +26,30 @@ pub fn scene_setup(
         .insert(TransformBundle::from_transform(Transform::from_rotation(
             Quat::from_axis_angle(Vec3::X, GROUND_ANGLE),
         )));
-    grounds_resource.current_ground = Some(ground_ent);
+    // de-spawn sensor(s)...
+    let game_over_sensor_mesh: Mesh = shape::Box::new(
+        GROUND_WIDTH * 1.5,
+        GROUND_THICKNESS * 20.,
+        GROUND_LENGTH * 1.5,
+    )
+    .into();
+    let Some(game_over_sen_collider) = Collider::from_bevy_mesh(
+        &game_over_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
+    let game_over_sensor_transform = Transform::from_translation(Vec3::Y * 2.0 + Vec3::Z * 1.0);
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(game_over_sensor_mesh.clone()),
+            material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
+            transform: game_over_sensor_transform,
+            visibility: Visibility::Hidden,
+            ..default()
+        },
+        game_over_sen_collider.clone(),
+        Sensor,
+        GroundGameOverSensor {
+            init_transform: game_over_sensor_transform,
+        },
+    ));
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {
@@ -148,28 +170,6 @@ pub fn spawn_ground(
                 ground_mid_collider.clone(),
                 Sensor,
                 GroundMidSensor,
-                BelongsToGround(ground_ent),
-            ));
-            // game over sensor(s)...
-            let game_over_sensor_mesh: Mesh = shape::Box::new(
-                GROUND_WIDTH * 1.5,
-                GROUND_THICKNESS * 20.,
-                GROUND_LENGTH * 1.5,
-            )
-            .into();
-            let Some(game_over_sen_collider) = Collider::from_bevy_mesh(
-                &game_over_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
-            commands.spawn((
-                PbrBundle {
-                    mesh: meshes.add(game_over_sensor_mesh.clone()),
-                    material: materials.add(Color::rgb(0.3, 0.5, 0.9).into()),
-                    transform: Transform::from_translation(Vec3::Y * 2.0 + Vec3::Z * 1.0),
-                    visibility: Visibility::Hidden,
-                    ..default()
-                },
-                game_over_sen_collider.clone(),
-                Sensor,
-                GroundGameOverSensor,
                 BelongsToGround(ground_ent),
             ));
         });
