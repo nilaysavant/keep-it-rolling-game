@@ -15,6 +15,7 @@ pub fn scene_setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut grounds_resource: ResMut<GroundsResource>,
 ) {
     // ground...
     let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
@@ -24,6 +25,7 @@ pub fn scene_setup(
         .insert(TransformBundle::from_transform(Transform::from_rotation(
             Quat::from_axis_angle(Vec3::X, GROUND_ANGLE),
         )));
+    grounds_resource.current_ground = Some(ground_ent);
 
     // ball...
     let ball_mesh = Mesh::from(shape::UVSphere {
@@ -31,18 +33,18 @@ pub fn scene_setup(
         ..default()
     });
     let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
-    commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(ball_mesh),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 2.5, -1.0),
-            ..default()
-        },
-        ball_collider,
-        RigidBody::Dynamic,
-        RollingBall,
-        Velocity::default(),
-    ));
+    // commands.spawn((
+    //     PbrBundle {
+    //         mesh: meshes.add(ball_mesh),
+    //         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+    //         transform: Transform::from_xyz(0.0, 2.5, -1.0),
+    //         ..default()
+    //     },
+    //     ball_collider,
+    //     RigidBody::Dynamic,
+    //     RollingBall,
+    //     Velocity::default(),
+    // ));
 
     // light...
     let light_transform = Transform::from_xyz(1.0, 8.0, 0.0);

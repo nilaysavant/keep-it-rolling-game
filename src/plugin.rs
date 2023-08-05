@@ -5,6 +5,7 @@ use bevy_inspector_egui::quick::{ResourceInspectorPlugin, WorldInspectorPlugin};
 use bevy_rapier3d::prelude::*;
 
 use crate::{
+    plugins::FlyCameraPlugin,
     resources::GroundsResource,
     systems::{
         camera::move_camera_focus_with_grounds,
@@ -14,6 +15,7 @@ use crate::{
             mark_cleanup_prev_grounds,
         },
         scene::scene_setup,
+        walls::pick_ground_point_raycast,
         window::setup_window,
     },
 };
@@ -32,10 +34,13 @@ impl Plugin for KeepItRollingGamePlugin {
                 gravity: Vec3::new(0., -10., 0.),
                 ..default()
             })
+            // physics plugins...
             .add_plugins((
                 RapierPhysicsPlugin::<NoUserData>::default(),
                 RapierDebugRenderPlugin::default(),
             ))
+            // fly cam
+            // .add_plugins(FlyCameraPlugin)
             // logic...
             .add_systems(Startup, scene_setup)
             // physics...
@@ -50,6 +55,8 @@ impl Plugin for KeepItRollingGamePlugin {
                 ),
             )
             .add_systems(First, cleanup_marked)
+            // walls...
+            .add_systems(Update, (pick_ground_point_raycast,))
             // camera
             .add_systems(Update, move_camera_focus_with_grounds)
             // lights
