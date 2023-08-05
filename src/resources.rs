@@ -11,7 +11,11 @@ pub struct GroundsResource {
 
 #[derive(Clone, Resource, Default, Debug, Reflect, InspectorOptions)]
 #[reflect(Resource)]
-pub struct ScoringResource {
+pub struct ScoresResource {
     pub stopwatch: Option<Stopwatch>,
     pub grounds_passed: u64,
 }
+
+#[derive(Clone, Resource, Default, Debug, Reflect, InspectorOptions)]
+#[reflect(Resource)]
+pub struct PreviousScores(pub Vec<ScoresResource>);

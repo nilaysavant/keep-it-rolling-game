@@ -7,7 +7,7 @@ use bevy_rapier3d::prelude::*;
 use crate::{
     events::{SceneEvent, WallEvent},
     plugins::FlyCameraPlugin,
-    resources::{GroundsResource, ScoringResource},
+    resources::{GroundsResource, ScoresResource, PreviousScores},
     state::GameState,
     systems::{
         camera::move_camera_focus_with_grounds,
@@ -55,7 +55,8 @@ impl Plugin for KeepItRollingGamePlugin {
             // menu...
             .add_systems(OnEnter(GameState::Menu), auto_start_game_on_menu)
             // scoring...
-            .insert_resource(ScoringResource::default())
+            .insert_resource(PreviousScores::default())
+            .insert_resource(ScoresResource::default())
             .add_systems(OnEnter(GameState::InGame), setup_scoring)
             .add_systems(
                 Update,
