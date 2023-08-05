@@ -25,6 +25,7 @@ pub fn pick_ground_point_raycast(
     cameras: Query<(&Camera, &GlobalTransform)>,
     mut gizmos: Gizmos,
     mouse_btn_input: Res<Input<MouseButton>>,
+    key_input: Res<Input<KeyCode>>,
     mut scroll_evr: EventReader<MouseWheel>,
     mut wall_event: EventWriter<WallEvent>,
     mut wall_angle: Local<f32>,
@@ -54,7 +55,9 @@ pub fn pick_ground_point_raycast(
 
         if let Some((entity, intersection)) = hit {
             let Ok(BelongsToGround(ground_ent)) =  query_ground_meshes.get(entity) else { continue; };
-            if ground_res.current_ground == Some(*ground_ent) {
+            if ground_res.current_ground == Some(*ground_ent)
+                || ground_res.next_ground == Some(*ground_ent)
+            {
                 let Ok(ground_transform) = query_grounds.get(*ground_ent) else { continue; };
                 let RayIntersection { point, normal, .. } = intersection;
                 let point_local = ground_transform.affine().inverse().transform_point(point);
@@ -71,6 +74,11 @@ pub fn pick_ground_point_raycast(
                             *wall_angle = ev.y * 0.1;
                         }
                     }
+                }
+                if key_input.pressed(KeyCode::A) {
+                    *wall_angle += 0.05;
+                } else if key_input.pressed(KeyCode::D) {
+                    *wall_angle -= 0.05;
                 }
                 let mut transform =
                     Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);
