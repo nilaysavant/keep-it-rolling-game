@@ -11,10 +11,10 @@ var texture: texture_2d<f32>;
 @group(1) @binding(1)
 var texture_sampler: sampler;
 
-fn refract(I: vec3<f32>, N: vec3<f32>, eta: f32) -> vec3<f32> {
-    let k = max((1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I))), 0.0);
-    return eta * I - (eta * dot(N, I) + sqrt(k)) * N;
-}
+// fn refract(I: vec3<f32>, N: vec3<f32>, eta: f32) -> vec3<f32> {
+//     let k = max((1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I))), 0.0);
+//     return eta * I - (eta * dot(N, I) + sqrt(k)) * N;
+// }
 
 const TAU: f32 = 6.28318530717958647692528676655900577;
 
