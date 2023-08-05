@@ -96,7 +96,7 @@ pub fn handle_wall_events(
             &Handle<Mesh>,
             &Handle<StandardMaterial>,
         ),
-        (With<TempWall>, Without<Cleanup>),
+        With<TempWall>,
     >,
     mut wall_events: EventReader<WallEvent>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -105,6 +105,9 @@ pub fn handle_wall_events(
     for event in wall_events.iter() {
         match event {
             WallEvent::HoverUpdate { ground, transform } => {
+                if commands.get_entity(*ground).is_none() {
+                    continue;
+                }
                 if temp_walls.is_empty() {
                     let Some(wall_ent) = draw_wall(
                         &mut commands,
