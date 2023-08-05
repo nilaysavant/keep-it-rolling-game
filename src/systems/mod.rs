@@ -5,5 +5,6 @@ pub mod ground;
 pub mod lights;
 pub mod menu;
 pub mod scene;
+pub mod scoring;
 pub mod walls;
 pub mod window;
