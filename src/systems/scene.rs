@@ -3,7 +3,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Cleanup, Ground, GroundGameOverSensor, GroundMesh, GroundMidSensor,
+        BelongsToGround, Cleanup, Ground, GameOverSensor, GroundMesh, GroundMidSensor,
         GroundSurfaceSensor, MyCamera, MyLight, RollingBall,
     },
     constants::{GROUND_ANGLE, GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
@@ -46,7 +46,7 @@ pub fn scene_setup(
         },
         game_over_sen_collider.clone(),
         Sensor,
-        GroundGameOverSensor {
+        GameOverSensor {
             init_transform: game_over_sensor_transform,
         },
     ));

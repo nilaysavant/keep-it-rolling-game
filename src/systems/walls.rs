@@ -7,8 +7,8 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{
     components::{
-        BelongsToGround, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor, MyCamera,
-        TempWall, Wall,
+        BelongsToGround, Cleanup, Ground, GroundMesh, GroundMidSensor, GroundSurfaceSensor,
+        MyCamera, TempWall, Wall,
     },
     constants::{GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::WallEvent,
@@ -96,7 +96,7 @@ pub fn handle_wall_events(
             &Handle<Mesh>,
             &Handle<StandardMaterial>,
         ),
-        With<TempWall>,
+        (With<TempWall>, Without<Cleanup>),
     >,
     mut wall_events: EventReader<WallEvent>,
     mut meshes: ResMut<Assets<Mesh>>,

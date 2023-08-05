@@ -14,10 +14,12 @@ use crate::{
         camera::move_camera_focus_with_grounds,
         cleanup::cleanup,
         egui::init_egui_context,
+        game_over_sensor::{
+            handle_ground_game_over_sensor, move_game_over_sensors_with_current_ground,
+        },
         ground::{
-            color_grounds, handle_ground_game_over_sensor, handle_ground_sensor,
-            handle_mid_ground_sensor, mark_cleanup_prev_grounds,
-            move_game_over_sensors_with_current_ground,
+            color_grounds, handle_ground_sensor, handle_mid_ground_sensor,
+            mark_cleanup_prev_grounds,
         },
         lights::move_lighting_with_grounds,
         menu::auto_start_game_on_menu,
@@ -86,8 +88,6 @@ impl Plugin for KeepItRollingGamePlugin {
                     handle_mid_ground_sensor,
                     color_grounds,
                     mark_cleanup_prev_grounds,
-                    handle_ground_game_over_sensor,
-                    move_game_over_sensors_with_current_ground,
                 )
                     .in_set(PluginSystemSet::InGame),
             )
@@ -96,6 +96,15 @@ impl Plugin for KeepItRollingGamePlugin {
             .add_systems(
                 Update,
                 (pick_ground_point_raycast, handle_wall_events).in_set(PluginSystemSet::InGame),
+            )
+            // game over sensor...
+            .add_systems(
+                Update,
+                (
+                    handle_ground_game_over_sensor,
+                    move_game_over_sensors_with_current_ground,
+                )
+                    .in_set(PluginSystemSet::InGame),
             )
             // camera
             .add_systems(

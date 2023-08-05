@@ -19,7 +19,7 @@ pub struct GroundSurfaceSensor;
 pub struct GroundMidSensor;
 
 #[derive(Debug, Component)]
-pub struct GroundGameOverSensor {
+pub struct GameOverSensor {
     pub init_transform: Transform,
 }
 
