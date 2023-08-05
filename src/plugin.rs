@@ -8,6 +8,7 @@ use crate::{
     events::{SceneEvent, WallEvent},
     plugins::FlyCameraPlugin,
     resources::GroundsResource,
+    state::GameState,
     systems::{
         camera::move_camera_focus_with_grounds,
         cleanup::cleanup,
@@ -43,10 +44,19 @@ impl Plugin for KeepItRollingGamePlugin {
             ))
             // fly cam
             // .add_plugins(FlyCameraPlugin)
+            // state and system sets...
+            .add_state::<GameState>()
+            .configure_set(
+                Update,
+                PluginSystemSet::InGame.run_if(in_state(GameState::InGame)),
+            )
             // scene...
             .add_event::<SceneEvent>()
-            .add_systems(Startup, scene_setup)
-            .add_systems(Update, (handle_scene_events,))
+            .add_systems(OnEnter(GameState::InGame), scene_setup)
+            .add_systems(
+                Update,
+                (handle_scene_events,).in_set(PluginSystemSet::InGame),
+            )
             // ground...
             .insert_resource(GroundsResource::default())
             .add_systems(
@@ -57,15 +67,25 @@ impl Plugin for KeepItRollingGamePlugin {
                     color_grounds,
                     mark_cleanup_prev_grounds,
                     handle_ground_game_over_sensor,
-                ),
+                )
+                    .in_set(PluginSystemSet::InGame),
             )
             // walls...
             .add_event::<WallEvent>()
-            .add_systems(Update, (pick_ground_point_raycast, handle_wall_events))
+            .add_systems(
+                Update,
+                (pick_ground_point_raycast, handle_wall_events).in_set(PluginSystemSet::InGame),
+            )
             // camera
-            .add_systems(Update, move_camera_focus_with_grounds)
+            .add_systems(
+                Update,
+                (move_camera_focus_with_grounds,).in_set(PluginSystemSet::InGame),
+            )
             // lights
-            .add_systems(Update, move_lighting_with_grounds)
+            .add_systems(
+                Update,
+                (move_lighting_with_grounds,).in_set(PluginSystemSet::InGame),
+            )
             // cleanup
             .add_systems(First, cleanup)
             // debug...
@@ -75,4 +95,14 @@ impl Plugin for KeepItRollingGamePlugin {
             // other...
             .add_systems(Startup, || info!("Game Started..."));
     }
+}
+
+/// The Plugin's own system set.
+///
+/// Used to apply common run conditions based on state etc to
+/// a common set of systems.
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+enum PluginSystemSet {
+    /// Run systems in this set when state is `InGame`.
+    InGame,
 }
