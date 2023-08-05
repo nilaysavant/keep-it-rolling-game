@@ -1,6 +1,7 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 
 use bevy::prelude::*;
+use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::{ResourceInspectorPlugin, WorldInspectorPlugin};
 use bevy_rapier3d::prelude::*;
 
@@ -24,7 +25,7 @@ use crate::{
             update_stopwatch,
         },
         walls::{handle_wall_events, pick_ground_point_raycast},
-        window::setup_window,
+        window::setup_window, egui::init_egui_context,
     },
 };
 
@@ -55,6 +56,10 @@ impl Plugin for KeepItRollingGamePlugin {
                 Update,
                 PluginSystemSet::InGame.run_if(in_state(GameState::InGame)),
             )
+            // egui
+            .add_plugins(EguiPlugin)
+            // egui init...
+            .add_systems(Startup, init_egui_context)
             // menu...
             .add_systems(OnEnter(GameState::Menu), auto_start_game_on_menu)
             // scoring...

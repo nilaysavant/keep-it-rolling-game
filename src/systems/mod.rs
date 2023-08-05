@@ -1,6 +1,7 @@
 pub mod basic;
 pub mod camera;
 pub mod cleanup;
+pub mod egui;
 pub mod ground;
 pub mod lights;
 pub mod menu;

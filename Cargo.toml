@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.11"
 bevy-inspector-egui = "0.19"
+bevy_egui = "0.21"
 bevy_rapier3d = { version = "0.22", features = [
     "debug-render",
     "serde-serialize",
