@@ -19,7 +19,7 @@ use crate::{
         lights::move_lighting_with_grounds,
         menu::auto_start_game_on_menu,
         scene::{handle_scene_events, scene_setup},
-        scoring::{display_score, setup_scoring, update_stopwatch},
+        scoring::{display_score, setup_scoring, update_stopwatch, update_grounds_passed},
         walls::{handle_wall_events, pick_ground_point_raycast},
         window::setup_window,
     },
@@ -59,7 +59,8 @@ impl Plugin for KeepItRollingGamePlugin {
             .add_systems(OnEnter(GameState::InGame), setup_scoring)
             .add_systems(
                 Update,
-                (update_stopwatch, display_score).in_set(PluginSystemSet::InGame),
+                (update_stopwatch, update_grounds_passed, display_score)
+                    .in_set(PluginSystemSet::InGame),
             )
             // scene...
             .add_event::<SceneEvent>()
