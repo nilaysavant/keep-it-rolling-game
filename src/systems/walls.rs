@@ -52,20 +52,20 @@ pub fn pick_ground_point_raycast(
                 gizmos.circle(point, normal, 0.1, Color::CYAN);
 
                 if mouse_btn_input.just_pressed(MouseButton::Left) {
-                    let ground_mesh: Mesh = shape::Box::new(
-                        GROUND_LENGTH / 4.,
-                        GROUND_THICKNESS * 4.,
-                        GROUND_LENGTH * 0.1,
-                    )
-                    .into();
+                    let wall_x = GROUND_LENGTH / 3.5;
+                    let wall_y = GROUND_THICKNESS * 3.;
+                    let wall_z = GROUND_LENGTH * 0.01;
+                    let wall: Mesh = shape::Box::new(wall_x, wall_y, wall_z).into();
                     let Some(ground_collider) = Collider::from_bevy_mesh(
-                        &ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
+                        &wall, &ComputedColliderShape::TriMesh) else { return; };
                     let wall_ent = commands
                         .spawn((
                             PbrBundle {
-                                mesh: meshes.add(ground_mesh.clone()),
+                                mesh: meshes.add(wall.clone()),
                                 material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-                                transform: Transform::from_translation(point_local),
+                                transform: Transform::from_translation(
+                                    point_local + Vec3::Y * wall_y / 2.,
+                                ),
                                 ..default()
                             },
                             ground_collider.clone(),
