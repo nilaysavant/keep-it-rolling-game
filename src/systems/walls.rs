@@ -12,7 +12,7 @@ use crate::{
     },
     constants::{GROUND_LENGTH, GROUND_THICKNESS, GROUND_WIDTH},
     events::WallEvent,
-    resources::GroundsResource,
+    resources::{GroundsResource, SettingsResource},
 };
 
 #[allow(clippy::too_many_arguments)]
@@ -22,6 +22,7 @@ pub fn pick_ground_point_raycast(
     query_ground_meshes: Query<&BelongsToGround, (With<GroundMesh>, With<Collider>)>,
     temp_walls: Query<With<TempWall>>,
     ground_res: Res<GroundsResource>,
+    settings_res: Res<SettingsResource>,
     rapier_context: Res<RapierContext>,
     cameras: Query<(&Camera, &GlobalTransform), With<MyCamera>>,
     mut gizmos: Gizmos,
@@ -64,11 +65,10 @@ pub fn pick_ground_point_raycast(
         gizmos.ray(point, normal, Color::CYAN);
         gizmos.circle(point, normal, 0.1, Color::CYAN);
 
-        let rotation_sensitivity = 0.05;
         if key_input.pressed(KeyCode::A) {
-            *wall_angle += rotation_sensitivity;
+            *wall_angle += settings_res.wall_rotation_sensitivity;
         } else if key_input.pressed(KeyCode::D) {
-            *wall_angle -= rotation_sensitivity;
+            *wall_angle -= settings_res.wall_rotation_sensitivity;
         }
         let mut transform =
             Transform::from_translation(point_local + Vec3::Y * GROUND_THICKNESS * 1.5);

@@ -24,7 +24,8 @@ pub fn display_settings(
         .show(egui_contexts.ctx_mut(), |ui| {
             ui.vertical(|ui| {
                 ui.add(
-                    Slider::new(&mut settings_res.rotation_sensitivity, 0.0..=5.)
+                    Slider::new(&mut settings_res.wall_rotation_sensitivity, 0.0..=1.)
+                        .clamp_to_range(false)
                         .text("Wall rotation sensitivity"),
                 )
             });
