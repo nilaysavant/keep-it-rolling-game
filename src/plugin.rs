@@ -54,6 +54,14 @@ impl Plugin for KeepItRollingGamePlugin {
                 RapierPhysicsPlugin::<NoUserData>::default(),
                 // RapierDebugRenderPlugin::default(),
             ))
+            .insert_resource(RapierConfiguration {
+                timestep_mode: TimestepMode::Interpolated {
+                    dt: 1.0 / 60.0,
+                    time_scale: 1.0,
+                    substeps: 1,
+                },
+                ..default()
+            })
             // fly cam
             // .add_plugins(FlyCameraPlugin)
             .add_plugins(FpsDisplayPlugin)

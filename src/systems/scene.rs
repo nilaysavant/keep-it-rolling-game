@@ -71,6 +71,7 @@ pub fn scene_setup(
         RigidBody::Dynamic,
         RollingBall,
         Velocity::default(),
+        TransformInterpolation::default(),
     ));
 
     // light...
