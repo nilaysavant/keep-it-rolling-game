@@ -4,5 +4,6 @@ use bevy::prelude::*;
 pub enum GameState {
     #[default]
     Menu,
+    SceneLoading,
     InGame,
 }

@@ -25,7 +25,7 @@ use crate::{
         },
         lights::move_lighting_with_grounds,
         menu::auto_start_game_on_menu,
-        scene::{handle_scene_events, scene_setup},
+        scene::{handle_scene_events, move_to_in_game, scene_setup},
         scoring::{display_scoreboard, setup_scoring, update_grounds_passed, update_stopwatch},
         settings::display_settings,
         walls::{handle_wall_events, pick_ground_point_raycast},
@@ -49,6 +49,7 @@ impl Plugin for KeepItRollingGamePlugin {
                     time_scale: 1.0,
                     substeps: 1,
                 },
+                physics_pipeline_active: false, // don't enable physics while starting
                 ..default()
             })
             .add_plugins((
@@ -85,7 +86,11 @@ impl Plugin for KeepItRollingGamePlugin {
             )
             // scene...
             .add_event::<SceneEvent>()
-            .add_systems(OnEnter(GameState::InGame), scene_setup)
+            .add_systems(OnEnter(GameState::SceneLoading), scene_setup)
+            .add_systems(
+                Update,
+                move_to_in_game.run_if(in_state(GameState::SceneLoading)),
+            )
             .add_systems(
                 Update,
                 (handle_scene_events,).in_set(PluginSystemSet::InGame),

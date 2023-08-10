@@ -110,6 +110,20 @@ pub fn scene_setup(
     ));
 }
 
+pub fn move_to_in_game(
+    mut next_state: ResMut<NextState<GameState>>,
+    time: Res<Time>,
+    mut rapier_conf: ResMut<RapierConfiguration>,
+) {
+    if time.elapsed_seconds() < 3.0 {
+        return;
+    }
+    // activate physics
+    rapier_conf.physics_pipeline_active = true;
+    // move to in game...
+    next_state.set(GameState::InGame);
+}
+
 pub fn spawn_ground(
     commands: &mut Commands<'_, '_>,
     meshes: &mut ResMut<'_, Assets<Mesh>>,
