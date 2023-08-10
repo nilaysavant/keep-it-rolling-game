@@ -1,5 +1,3 @@
-//! A simple 3D scene with light shining over a cube sitting on a plane.
-
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::{ResourceInspectorPlugin, WorldInspectorPlugin};
@@ -44,16 +42,7 @@ impl Plugin for KeepItRollingGamePlugin {
             .insert_resource(ClearColor(Color::BLACK))
             // window...
             .add_systems(Startup, setup_window)
-            // physics setup...
-            .insert_resource(RapierConfiguration {
-                gravity: Vec3::new(0., -10., 0.),
-                ..default()
-            })
-            // physics plugins...
-            .add_plugins((
-                RapierPhysicsPlugin::<NoUserData>::default(),
-                // RapierDebugRenderPlugin::default(),
-            ))
+            // physics...
             .insert_resource(RapierConfiguration {
                 timestep_mode: TimestepMode::Interpolated {
                     dt: 1.0 / 60.0,
@@ -62,6 +51,10 @@ impl Plugin for KeepItRollingGamePlugin {
                 },
                 ..default()
             })
+            .add_plugins((
+                RapierPhysicsPlugin::<NoUserData>::default(),
+                // RapierDebugRenderPlugin::default(),
+            ))
             // fly cam
             // .add_plugins(FlyCameraPlugin)
             .add_plugins(FpsDisplayPlugin)
