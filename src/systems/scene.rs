@@ -64,7 +64,7 @@ pub fn scene_setup(
         MaterialMeshBundle {
             mesh: meshes.add(ball_mesh),
             material: glowy_mat_hdl.clone(),
-            transform: Transform::from_xyz(0.0, 2.5, -1.0),
+            transform: Transform::from_xyz(0.0, 4.5, -1.2),
             ..default()
         },
         ball_collider,
