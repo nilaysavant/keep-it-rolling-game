@@ -18,7 +18,9 @@ pub fn setup_scoring(mut scoring_res: ResMut<ScoresResource>, time: Res<Time>) {
 }
 
 pub fn update_stopwatch(mut scoring_res: ResMut<ScoresResource>, time: Res<Time>) {
-    let Some(stopwatch) = scoring_res.stopwatch.as_mut() else { return; };
+    let Some(stopwatch) = scoring_res.stopwatch.as_mut() else {
+        return;
+    };
     stopwatch.tick(time.delta());
 }
 
@@ -30,7 +32,13 @@ pub fn update_grounds_passed(
     if !grounds_res.is_changed() {
         return;
     }
-    let GroundsResource { previous_ground: Some(previous_ground), .. } = *grounds_res else { return; };
+    let GroundsResource {
+        previous_ground: Some(previous_ground),
+        ..
+    } = *grounds_res
+    else {
+        return;
+    };
     if *prev_ground != Some(previous_ground) {
         scoring_res.grounds_passed += 1;
         *prev_ground = Some(previous_ground);
@@ -43,7 +51,13 @@ pub fn display_scoreboard(
     prev_scoring_res: Res<PreviousScoresRes>,
     mut egui_contexts: EguiContexts,
 ) {
-    let ScoresResource { stopwatch: Some(stopwatch), grounds_passed } = scoring_res.as_ref() else { return; };
+    let ScoresResource {
+        stopwatch: Some(stopwatch),
+        grounds_passed,
+    } = scoring_res.as_ref()
+    else {
+        return;
+    };
     let watch_display = format!(
         "{:02.0}:{:02.0}",
         stopwatch.elapsed_secs() / 60.,
@@ -51,8 +65,13 @@ pub fn display_scoreboard(
     );
     let score_display = format!("Time: {}  Panels: {}", watch_display, grounds_passed);
     let prev_scores_display = prev_scoring_res.0.iter().filter_map(|scoring_res| {
-        let ScoresResource { stopwatch: Some(stopwatch), grounds_passed } = scoring_res
-        else { return None; };
+        let ScoresResource {
+            stopwatch: Some(stopwatch),
+            grounds_passed,
+        } = scoring_res
+        else {
+            return None;
+        };
         let watch_display = format!(
             "{:02.0}:{:02.0}",
             stopwatch.elapsed_secs() / 60.,
@@ -61,7 +80,9 @@ pub fn display_scoreboard(
         let score_display = format!("Time: {}  Panels: {}", watch_display, grounds_passed);
         Some(score_display)
     });
-    let Ok(ball_vel) = query_ball.get_single() else { return; };
+    let Ok(ball_vel) = query_ball.get_single() else {
+        return;
+    };
 
     let frame = get_default_egui_frame();
     // println!(

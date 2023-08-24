@@ -13,10 +13,19 @@ pub fn move_lighting_with_grounds(
     ground_res: Res<GroundsResource>,
     time: Res<Time>,
 ) {
-    let Some(current_ground) = ground_res.current_ground else { return; };
-    let Ok(current_ground_transform) = query_grounds.get(current_ground) else { return; };
-    let Ok((mut light_transform, MyLight { init_transform })) = query_lights.get_single_mut() else { return; };
-    let Ok(ball_vel) = query_ball.get_single() else { return; };
+    let Some(current_ground) = ground_res.current_ground else {
+        return;
+    };
+    let Ok(current_ground_transform) = query_grounds.get(current_ground) else {
+        return;
+    };
+    let Ok((mut light_transform, MyLight { init_transform })) = query_lights.get_single_mut()
+    else {
+        return;
+    };
+    let Ok(ball_vel) = query_ball.get_single() else {
+        return;
+    };
     let light_transform_lerp_fact = 1. * ball_vel.linvel.z;
     light_transform.translation = light_transform.translation.lerp(
         current_ground_transform.translation + init_transform.translation,

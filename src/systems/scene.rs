@@ -21,7 +21,9 @@ pub fn scene_setup(
     mut glowmaterials: ResMut<Assets<GlowyMaterial>>,
 ) {
     // ground...
-    let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { return; };
+    let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else {
+        return;
+    };
     // rotate by 45 deg...
     commands
         .entity(ground_ent)
@@ -35,8 +37,11 @@ pub fn scene_setup(
         GROUND_LENGTH * 1.5,
     )
     .into();
-    let Some(game_over_sen_collider) = Collider::from_bevy_mesh(
-        &game_over_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
+    let Some(game_over_sen_collider) =
+        Collider::from_bevy_mesh(&game_over_sensor_mesh, &ComputedColliderShape::TriMesh)
+    else {
+        return;
+    };
     let game_over_sensor_transform = Transform::from_translation(Vec3::Y * 2.0 + Vec3::Z * 1.0);
     commands.spawn((
         PbrBundle {
@@ -59,7 +64,12 @@ pub fn scene_setup(
         radius: 0.5,
         ..default()
     });
-    let Some(ball_collider) = Collider::from_bevy_mesh(&ball_mesh, &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default())) else { return; };
+    let Some(ball_collider) = Collider::from_bevy_mesh(
+        &ball_mesh,
+        &ComputedColliderShape::ConvexDecomposition(VHACDParameters::default()),
+    ) else {
+        return;
+    };
     commands.spawn((
         MaterialMeshBundle {
             mesh: meshes.add(ball_mesh),
@@ -143,8 +153,11 @@ pub fn spawn_ground(
             // main ground mesh...
             let ground_mesh: Mesh =
                 shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS, GROUND_LENGTH).into();
-            let Some(ground_collider) = Collider::from_bevy_mesh(
-                &ground_mesh, &ComputedColliderShape::TriMesh) else { return; };
+            let Some(ground_collider) =
+                Collider::from_bevy_mesh(&ground_mesh, &ComputedColliderShape::TriMesh)
+            else {
+                return;
+            };
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(ground_mesh.clone()),
@@ -173,8 +186,11 @@ pub fn spawn_ground(
             // mid sensor...
             let ground_mid_sensor_mesh: Mesh =
                 shape::Box::new(GROUND_WIDTH, GROUND_THICKNESS * 4.0, GROUND_LENGTH * 0.1).into();
-            let Some(ground_mid_collider) = Collider::from_bevy_mesh(
-                &ground_mid_sensor_mesh, &ComputedColliderShape::TriMesh) else { return; };
+            let Some(ground_mid_collider) =
+                Collider::from_bevy_mesh(&ground_mid_sensor_mesh, &ComputedColliderShape::TriMesh)
+            else {
+                return;
+            };
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(ground_mid_sensor_mesh.clone()),

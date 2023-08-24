@@ -21,11 +21,15 @@ pub fn handle_ground_sensor(
     mut ground_res: ResMut<GroundsResource>,
     rapier_context: Res<RapierContext>,
 ) {
-    let Ok(ball_ent) = balls.get_single() else { return; };
+    let Ok(ball_ent) = balls.get_single() else {
+        return;
+    };
     // temp var for current ground init to none.
     let mut active_ground = None;
     for (sensor_ent, BelongsToGround(ground_ent)) in ground_sensors.iter() {
-        let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent ) else { continue; };
+        let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent) else {
+            continue;
+        };
         if is_intersecting {
             // set the active current ground if intersecting.
             active_ground = Some(*ground_ent);
@@ -56,9 +60,13 @@ pub fn handle_mid_ground_sensor(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let Ok(ball_ent) = balls.get_single() else { return; };
+    let Ok(ball_ent) = balls.get_single() else {
+        return;
+    };
     for (sensor_ent, BelongsToGround(ground_ent)) in ground_mid_sensors.iter() {
-        let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent ) else { continue; };
+        let Some(is_intersecting) = rapier_context.intersection_pair(ball_ent, sensor_ent) else {
+            continue;
+        };
         if is_intersecting
             && ground_res.current_ground == Some(*ground_ent)
             && ground_res.next_ground.is_none()
@@ -66,10 +74,14 @@ pub fn handle_mid_ground_sensor(
             // spawn new ground relative to prev ground transform...
             let mut transform = Transform::default();
             if let Some(current_ground) = ground_res.current_ground {
-                let Ok(current_transform) = query_grounds.get(current_ground) else { continue; };
+                let Ok(current_transform) = query_grounds.get(current_ground) else {
+                    continue;
+                };
                 transform = *current_transform;
             }
-            let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else { continue; };
+            let Some(ground_ent) = spawn_ground(&mut commands, &mut meshes, &mut materials) else {
+                continue;
+            };
             // rotate by 45 deg...
             transform.rotation = Quat::from_axis_angle(Vec3::X, GROUND_ANGLE);
             transform.translation.y +=
@@ -93,9 +105,13 @@ pub fn color_grounds(
 ) {
     for (BelongsToGround(ground_ent), mat_hdl) in ground_materials.iter() {
         // Get the grounds cleanup timer (i.e. also used as overheat timer)
-        let Ok(Cleanup::OnTimeout { timer }) = grounds.get(*ground_ent) else { continue; };
+        let Ok(Cleanup::OnTimeout { timer }) = grounds.get(*ground_ent) else {
+            continue;
+        };
         let remaining = timer.remaining_secs();
-        let Some(mat) = materials.get_mut(mat_hdl) else { continue; };
+        let Some(mat) = materials.get_mut(mat_hdl) else {
+            continue;
+        };
         let mut new_color = mat.base_color.as_hsla_f32();
         new_color[0] = Color::GREEN.as_hsla_f32()[0] * remaining / GROUND_OVERHEAT_DURATION_SECS;
         mat.base_color = Color::hsla(new_color[0], new_color[1], new_color[2], new_color[3]);

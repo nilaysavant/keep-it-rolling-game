@@ -33,17 +33,23 @@ pub fn pick_ground_point_raycast(
 ) {
     let window = windows.single();
 
-    let Some(cursor_position) = window.cursor_position() else { return; };
+    let Some(cursor_position) = window.cursor_position() else {
+        return;
+    };
 
     let predicate = |entity| !temp_walls.contains(entity);
     let filter = QueryFilter::exclude_dynamic()
         .exclude_sensors()
         .predicate(&predicate);
 
-    let Ok((camera, camera_transform)) = cameras.get_single() else { return; };
+    let Ok((camera, camera_transform)) = cameras.get_single() else {
+        return;
+    };
 
     // First, compute a ray from the mouse position.
-    let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else { return; };
+    let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else {
+        return;
+    };
 
     // Then cast the ray.
     let hit =
@@ -55,10 +61,14 @@ pub fn pick_ground_point_raycast(
         return;
     };
     // if hit continue to evaluate...
-    let Ok(BelongsToGround(ground_ent)) =  query_ground_meshes.get(entity) else { return; };
+    let Ok(BelongsToGround(ground_ent)) = query_ground_meshes.get(entity) else {
+        return;
+    };
     if ground_res.current_ground == Some(*ground_ent) || ground_res.next_ground == Some(*ground_ent)
     {
-        let Ok(ground_transform) = query_grounds.get(*ground_ent) else { return; };
+        let Ok(ground_transform) = query_grounds.get(*ground_ent) else {
+            return;
+        };
         let RayIntersection { point, normal, .. } = intersection;
         let point_local = ground_transform.affine().inverse().transform_point(point);
         let normal_local = ground_transform.affine().inverse().transform_point(normal);
@@ -117,7 +127,9 @@ pub fn handle_wall_events(
                         *transform,
                         ground,
                         false,
-                    ) else { continue; };
+                    ) else {
+                        continue;
+                    };
                     commands.entity(wall_ent).insert(TempWall);
                 } else {
                     let Ok((
@@ -127,10 +139,15 @@ pub fn handle_wall_events(
                         parent,
                         mesh_hdl,
                         mat_hdl,
-                    )) = temp_walls.get_single_mut() else { continue; };
+                    )) = temp_walls.get_single_mut()
+                    else {
+                        continue;
+                    };
                     *temp_wall_transform = *transform;
                     *visibility = Visibility::Visible;
-                    let Some(wall_mat) = materials.get_mut(mat_hdl) else { continue; };
+                    let Some(wall_mat) = materials.get_mut(mat_hdl) else {
+                        continue;
+                    };
                     wall_mat.alpha_mode = AlphaMode::Blend;
                     wall_mat.base_color.set_a(0.6);
                     if parent.get() != *ground {
@@ -141,28 +158,41 @@ pub fn handle_wall_events(
             }
             WallEvent::HoverStop => {
                 let Ok((
-                        entity,
-                        mut temp_wall_transform,
-                        mut visibility,
-                        parent,
-                        mesh_hdl,
-                        mat_hdl,
-                    )) = temp_walls.get_single_mut() else { continue; };
+                    entity,
+                    mut temp_wall_transform,
+                    mut visibility,
+                    parent,
+                    mesh_hdl,
+                    mat_hdl,
+                )) = temp_walls.get_single_mut()
+                else {
+                    continue;
+                };
                 *visibility = Visibility::Hidden;
             }
             WallEvent::Draw => {
                 let Ok((
-                        entity,
-                        mut temp_wall_transform,
-                        mut visibility,
-                        parent,
-                        mesh_hdl,
-                        mat_hdl,
-                    )) = temp_walls.get_single_mut() else { continue; };
-                let Some(wall_mesh) = meshes.get(mesh_hdl) else { continue; };
-                let Some(collider) = Collider::from_bevy_mesh(
-                        wall_mesh, &ComputedColliderShape::TriMesh) else { continue; };
-                let Some(wall_mat) = materials.get_mut(mat_hdl) else { continue; };
+                    entity,
+                    mut temp_wall_transform,
+                    mut visibility,
+                    parent,
+                    mesh_hdl,
+                    mat_hdl,
+                )) = temp_walls.get_single_mut()
+                else {
+                    continue;
+                };
+                let Some(wall_mesh) = meshes.get(mesh_hdl) else {
+                    continue;
+                };
+                let Some(collider) =
+                    Collider::from_bevy_mesh(wall_mesh, &ComputedColliderShape::TriMesh)
+                else {
+                    continue;
+                };
+                let Some(wall_mat) = materials.get_mut(mat_hdl) else {
+                    continue;
+                };
                 wall_mat.alpha_mode = AlphaMode::Opaque;
                 wall_mat.base_color.set_a(1.);
                 commands
@@ -200,8 +230,10 @@ fn draw_wall(
         ))
         .id();
     if add_collider {
-        let Some(collider) = Collider::from_bevy_mesh(
-            &wall, &ComputedColliderShape::TriMesh) else { return None; };
+        let Some(collider) = Collider::from_bevy_mesh(&wall, &ComputedColliderShape::TriMesh)
+        else {
+            return None;
+        };
         commands.entity(wall_ent).insert(collider.clone());
     }
     commands.entity(*ground_ent).push_children(&[wall_ent]);

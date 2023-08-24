@@ -9,7 +9,9 @@ use bevy_egui::{
 
 pub fn fps_text_update_system(diagnostics: Res<DiagnosticsStore>, mut egui_contexts: EguiContexts) {
     if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
-        let Some(avg_fps) = fps.average() else { return; };
+        let Some(avg_fps) = fps.average() else {
+            return;
+        };
         // println!("fps: {}", avg_fps);
         let frame = get_default_egui_frame();
         egui::Window::new("FPS Display")
