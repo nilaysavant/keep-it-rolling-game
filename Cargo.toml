@@ -2,8 +2,14 @@
 name = "keep-it-rolling-game"
 version = "0.1.0"
 edition = "2021"
+publish = false
+authors = ["Nilay Savant"]                       # ToDo: you are the author ;)
+exclude = ["dist", "build", "assets", "credits"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["mobile"]
 
 [dependencies]
 bevy = "0.11"
@@ -15,6 +21,13 @@ bevy_rapier3d = { version = "0.22", features = [
     "dim3",
 ] }
 
+# keep the following in sync with Bevy's dependencies
+winit = { version = "0.28", default-features = false }
+image = { version = "0.24", default-features = false }
+
+
+[build-dependencies]
+embed-resource = "1.4"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
