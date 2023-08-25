@@ -2,10 +2,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Keep It Rollin Game</title>
+    <title>Keep It Rollin Game</title><!-- ToDo -->
     <link data-trunk rel="copy-dir" href="assets" />
-    <link data-trunk rel="copy-dir" href="js" />
-    <link data-trunk rel="css" href="styles/global.css" />
+    <link data-trunk rel="copy-dir" href="credits" />
+    <link data-trunk rel="icon" href="build/windows/icon.ico" />
+    <link data-trunk rel="inline" href="build/web/styles.css" />
   </head>
   <body>
     <link
@@ -15,11 +16,15 @@
       href="Cargo.toml"
       data-bin="keep-it-rolling-game"
       data-wasm-opt="0"
-    />
+    /><!-- ToDo -->
+    <link data-trunk rel="inline" href="build/web/sound.js" />
     <div class="container">
-      <span id="wasm-loading-text" class="container__loadingText">Loading...</span>
-      <canvas id="my-game"></canvas>
+      <span id="wasm-loading-text" class="container__loadingText"
+        >Loading...</span
+      >
+      <canvas id="my-game">
+        Javascript and support for canvas is required
+      </canvas>
     </div>
-    <script data-trunk src="js/restart-audio-context.js" />
   </body>
 </html>
