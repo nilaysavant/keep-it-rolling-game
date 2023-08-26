@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version - in the form of v1.2.3'
+        description: "Version - in the form of v1.2.3"
         required: true
         type: string
 
@@ -82,6 +82,10 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
 
   build-linux:
     runs-on: ubuntu-latest
@@ -117,6 +121,10 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
 
   build-windows:
     runs-on: windows-latest
@@ -157,8 +165,12 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.GAME_EXECUTABLE_NAME }}_windows.zip
           asset_name: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_windows.zip
-          tag: ${{ github.ref }}
+          tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
       - name: Upload installer
         if: ${{ env.BUILD_INSTALLER }}
         uses: svenstaro/upload-release-action@v2
@@ -169,6 +181,10 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
 
   build-web:
     runs-on: ubuntu-latest
@@ -218,6 +234,10 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
 
   build-for-iOS:
     runs-on: macos-latest
@@ -247,6 +267,10 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
 
   build-for-Android:
     runs-on: ubuntu-latest
@@ -276,3 +300,7 @@ jobs:
           release_name: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
           overwrite: true
+          # make this a prerelease and not the latest.
+          # This is to allow manual verification before marking it as proper release.
+          prerelease: true
+          make_latest: false
