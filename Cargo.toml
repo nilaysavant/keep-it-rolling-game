@@ -12,9 +12,13 @@ exclude = ["dist", "build", "assets", "credits"]
 members = ["mobile"]
 
 [dependencies]
+bevy_egui = { version = "0.21", default-features = false, features = [
+    # "manage_clipboard", # disable clipboard feature since its not available and breaks on android build
+    "open_url",
+    "default_fonts",
+] }
 bevy = "0.11"
 bevy-inspector-egui = "0.19"
-bevy_egui = "0.21"
 bevy_rapier3d = { version = "0.22", features = [
     "debug-render",
     "serde-serialize",
