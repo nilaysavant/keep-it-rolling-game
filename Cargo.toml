@@ -18,7 +18,11 @@ bevy_egui = { version = "0.21", default-features = false, features = [
     "default_fonts",
 ] }
 bevy = "0.11"
-bevy-inspector-egui = "0.19"
+# patched version of the inspector crate with no clipboard feature (from bevy_egui) dep.
+bevy-inspector-egui = { git = "https://github.com/nilaysavant/bevy-inspector-egui", branch = "no-clipboard-v0.19", default-features = false, features = [
+    "bevy_pbr",
+    "bevy_egui_no_clipboard",
+] }
 bevy_rapier3d = { version = "0.22", features = [
     "debug-render",
     "serde-serialize",
