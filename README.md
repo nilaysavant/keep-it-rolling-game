@@ -13,6 +13,8 @@ Contain an energetic quantum particle by strategically placing walls in this 48-
 
 ## Platforms
 
+[![release-flow](https://github.com/nilaysavant/keep-it-rolling-game/actions/workflows/release.yaml/badge.svg)](https://github.com/nilaysavant/keep-it-rolling-game/actions/workflows/release.yaml)
+
 The game currently runs on the `Web` via **WebAssembly**. `Windows`, `Linux` and `Mac` builds will be added soon!
 
 ## Gameplay
